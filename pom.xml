@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -34,5 +34,32 @@
             <version>1.4.190</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>${project.source.compile}</source>
+                    <target>${project.target.compile}</target>
+                    <encoding>${project.source.encoding}</encoding>
+                    <optimize>true</optimize>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                    <compilerArgs>
+                        <arg>-Xlint</arg>
+                        <arg>-Xlint:-path</arg>
+                        <arg>-Xlint:-options</arg>
+                        <arg>-Xlint:-classfile</arg>
+                        <arg>-Xlint:-processing</arg>
+                    </compilerArgs>
+                    <testExcludes>
+                        <exclude>**/package-info.java</exclude>
+                    </testExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

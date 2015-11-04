@@ -11,11 +11,7 @@ public class ServiceLocator {
 
     private static ServiceLocator instance = new ServiceLocator();
 
-    private ConcurrentHashMap<Object, Object> services = new ConcurrentHashMap<>();
-
-    public static ServiceLocator locator() {
-        return instance;
-    }
+    private ServiceMap<Object> services = new ServiceMap<>();
 
     public static <T> T service(final Class<T> clazz) {
         return instance.getService(clazz);
@@ -25,13 +21,16 @@ public class ServiceLocator {
         instance.putService(clazz, service);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getService(final Class<T> clazz) {
-        //noinspection unchecked
         return (T) services.get(clazz);
     }
 
     public <T> void putService(final Class<T> clazz, final T service) {
         services.put(clazz, service);
+    }
+
+    private static class ServiceMap<T> extends ConcurrentHashMap<Class<? extends T>, T> {
     }
 
 }
