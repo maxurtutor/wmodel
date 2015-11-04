@@ -19,7 +19,7 @@ import org.skife.jdbi.v2.Handle;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import static java.util.Arrays.stream;
+import static java.util.Arrays.asList;
 import static org.maxur.wmodel.domain.ServiceLocator.persist;
 
 /**
@@ -43,12 +43,20 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
         persist(GroupRepository.class, dbi.onDemand(GroupDAO.class));
 
         try (Handle h = dbi.open()) {
-            h.execute("create table t_group (group_id int primary key, name varchar(100))");
-            h.execute("create table t_user (user_id int primary key auto_increment, name varchar(100), group_id int)");
-            h.insert("insert into t_group (group_id, name) values (?, ?)", 1, "developers");
-            h.insert("insert into t_group (group_id, name) values (?, ?)", 2, "managers");
-            String[] names = {"Ivanov", "Petrov", "Sidorov"};
-            stream(names)
+            h.execute("CREATE TABLE t_group (group_id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100))");
+            h.execute("CREATE TABLE t_user (\n" +
+                    "  user_id INT PRIMARY KEY AUTO_INCREMENT, \n" +
+                    "  name VARCHAR(100), group_id INT,\n" +
+                    "  FOREIGN KEY (group_id)\n" +
+                    "  REFERENCES t_group(group_id)\n" +
+                    ")");
+
+            asList("developers", "managers")
+                    .stream()
+                    .forEach(name -> h.insert("insert into t_group (name) values (?)", name));
+
+            asList("Ivanov", "Petrov", "Sidorov")
+                    .stream()
                     .forEach(name -> h.insert("insert into t_user (name, group_id) values (?, ?)", name, 1));
         }
 
