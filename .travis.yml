@@ -10,6 +10,6 @@ env:
 jdk:
   - oraclejdk8
 install:
-  - mvn clean install -Penv-dev  
+  - mvn clean install
 script:
-  - mvn test -Penv-dev
+  - mvn test
