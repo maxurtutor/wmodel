@@ -15,5 +15,6 @@ import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 public interface GroupDAO extends GroupRepository {
 
     @SqlQuery("select * from t_group where group_id = :group_id")
+    @Override
     Group find(@Bind("group_id") Integer groupId);
 }

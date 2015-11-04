@@ -10,7 +10,7 @@ import static org.maxur.wmodel.domain.ServiceLocator.service;
 public class User {
 
     private final String name;
-    private final int groupId;
+    private int groupId;
     private int id;
     private Group group;
 
@@ -33,14 +33,22 @@ public class User {
     }
 
     public User insert() {
-        final UserRepository userRepository = service(UserRepository.class);
-        final Integer countUsersByGroup =
-                userRepository.findCountUsersByGroup(groupId);
-        if (countUsersByGroup == 5) {
+        checkLimit(groupId);
+        this.id = service(UserRepository.class).insert(name, groupId);
+        return this;
+    }
+
+    public void moveTo(Integer newGroupId) {
+        checkLimit(newGroupId);
+        this.groupId = newGroupId;
+        service(UserRepository.class).amend(this);
+    }
+
+    private void checkLimit(int groupId) {
+        final Integer count = service(UserRepository.class).findCountUsersByGroup(groupId);
+        if (count == 5) {
             throw new IllegalStateException("User limit is overflow");
         }
-        this.id = userRepository.insert(name, groupId);
-        return this;
     }
 
     public int getId() {
@@ -49,5 +57,10 @@ public class User {
 
     public String getName() {
         return name;
+    }
+
+    @SuppressWarnings("unused")
+    public int getGroupId() {
+        return groupId;
     }
 }

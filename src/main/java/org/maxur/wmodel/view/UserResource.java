@@ -29,6 +29,21 @@ public class UserResource {
     }
 
     @Timed
+    @PUT
+    @Path("/{userId}")
+    public Response move(@PathParam("userId") Integer userId, Integer groupId) {
+        try {
+            final User user = repository.find(userId);
+            user.moveTo(groupId);
+            return Response.ok(user).build();
+        } catch (RuntimeException e) {
+            return Response.status(BAD_REQUEST).entity(e.getMessage())
+                    .type("text/plain")
+                    .build();
+        }
+    }
+
+    @Timed
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)

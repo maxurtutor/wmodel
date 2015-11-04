@@ -11,6 +11,8 @@ public interface UserRepository {
 
     Integer insert(String name, Integer userId);
 
+    void amend(User user);
+
     Integer findCountUsersByGroup(Integer groupId);
 
     User find(Integer id);
