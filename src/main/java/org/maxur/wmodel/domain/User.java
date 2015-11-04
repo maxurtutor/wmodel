@@ -1,7 +1,5 @@
 package org.maxur.wmodel.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import static org.maxur.wmodel.domain.ServiceLocator.service;
 
 /**
@@ -9,31 +7,29 @@ import static org.maxur.wmodel.domain.ServiceLocator.service;
  * @version 1.0
  * @since <pre>04.11.2015</pre>
  */
-@SuppressWarnings("unused")
 public class User {
 
-    @JsonProperty
-    public int id;
+    private final String name;
+    private final int groupId;
+    private int id;
+    private Group group;
 
-    @JsonProperty
-    public int groupId;
-
-    @JsonProperty
-    public String name;
-
-    public User() {
-    }
-
-    public User(int id, String name, int groupId) {
+    private User(int id, String name, int groupId) {
         this.id = id;
         this.name = name;
         this.groupId = groupId;
     }
 
-    @JsonProperty
+    public static User make(int id, String name, int groupId) {
+        return new User(id, name, groupId);
+    }
+
     public Group getGroup() {
-        final GroupRepository groupRepository = service(GroupRepository.class);
-        return groupRepository.find(groupId);
+        if (this.group == null) {
+            final GroupRepository groupRepository = service(GroupRepository.class);
+            this.group = groupRepository.find(groupId);
+        }
+        return this.group;
     }
 
     public User insert() {
@@ -45,5 +41,13 @@ public class User {
         }
         this.id = userRepository.insert(name, groupId);
         return this;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 }

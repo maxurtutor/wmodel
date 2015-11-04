@@ -1,7 +1,5 @@
 package org.maxur.wmodel.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * @author myunusov
  * @version 1.0
@@ -9,18 +7,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Group {
 
-    @JsonProperty
-    public int groupId;
+    private final int groupId;
 
-    @JsonProperty
-    public String name;
+    private final String name;
 
-
-    public Group() {
-    }
-
-    public Group(int groupId, String name) {
+    private Group(int groupId, String name) {
         this.groupId = groupId;
         this.name = name;
+    }
+
+    public static Group make(int groupId, String name) {
+        return new Group(groupId, name);
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public String getName() {
+        return name;
     }
 }
