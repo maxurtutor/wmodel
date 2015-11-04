@@ -1,6 +1,7 @@
 package org.maxur.wmodel.da;
 
 import org.maxur.wmodel.domain.User;
+import org.maxur.wmodel.domain.UserRepository;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -15,19 +16,19 @@ import java.util.List;
  * @since <pre>04.11.2015</pre>
  */
 @RegisterMapper(UserMapper.class)
-public interface UserDAO {
+public interface UserDAO extends UserRepository {
 
     @SqlUpdate("insert into t_user (name, group_id) values (:name, :group_id)")
     @GetGeneratedKeys
-    int insert(@Bind("name") String name, @Bind("group_id") int userId);
+    Integer insert(@Bind("name") String name, @Bind("group_id") Integer userId);
 
     @SqlQuery("select * from t_user where user_id = :user_id")
-    User findById(@Bind("user_id") int userId);
+    User find(@Bind("user_id") Integer id);
 
     @SqlQuery("select * from t_user")
-    List<User> all();
+    List<User> findAll();
 
     @SqlQuery("select count(*) from t_user where group_id = :group_id")
-    Integer findCountUsersByGroup(@Bind("group_id") int groupId);
+    Integer findCountUsersByGroup(@Bind("group_id") Integer groupId);
 
 }

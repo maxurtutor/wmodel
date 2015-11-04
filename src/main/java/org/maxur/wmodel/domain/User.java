@@ -1,10 +1,8 @@
 package org.maxur.wmodel.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.maxur.wmodel.da.GroupDAO;
-import org.maxur.wmodel.da.UserDAO;
 
-import static org.maxur.wmodel.service.ServiceLocator.service;
+import static org.maxur.wmodel.domain.ServiceLocator.service;
 
 /**
  * @author myunusov
@@ -34,18 +32,18 @@ public class User {
 
     @JsonProperty
     public Group getGroup() {
-        final GroupDAO groupDAO = service(GroupDAO.class);
-        return groupDAO.findGroupById(groupId);
+        final GroupRepository groupRepository = service(GroupRepository.class);
+        return groupRepository.find(groupId);
     }
 
     public User insert() {
-        final UserDAO userDAO = service(UserDAO.class);
+        final UserRepository userRepository = service(UserRepository.class);
         final Integer countUsersByGroup =
-                userDAO.findCountUsersByGroup(groupId);
+                userRepository.findCountUsersByGroup(groupId);
         if (countUsersByGroup == 5) {
             throw new IllegalStateException("User limit is overflow");
         }
-        this.id = userDAO.insert(name, groupId);
+        this.id = userRepository.insert(name, groupId);
         return this;
     }
 }

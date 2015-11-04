@@ -10,7 +10,8 @@ import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
 import org.maxur.wmodel.da.GroupDAO;
 import org.maxur.wmodel.da.UserDAO;
-import org.maxur.wmodel.service.UserRepository;
+import org.maxur.wmodel.domain.GroupRepository;
+import org.maxur.wmodel.domain.UserRepository;
 import org.maxur.wmodel.view.UserResource;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
@@ -19,7 +20,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static java.util.Arrays.stream;
-import static org.maxur.wmodel.service.ServiceLocator.persist;
+import static org.maxur.wmodel.domain.ServiceLocator.persist;
 
 /**
  * @author myunusov
@@ -37,9 +38,9 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
         DBI dbi = new DBIFactory().build(env, cfg.getDataSourceFactory(), "db");
         JmxReporter.forRegistry(env.metrics()).build().start();
 
-
-        persist(UserDAO.class, dbi.onDemand(UserDAO.class));
-        persist(GroupDAO.class, dbi.onDemand(GroupDAO.class));
+        final UserDAO userDAO = dbi.onDemand(UserDAO.class);
+        persist(UserRepository.class, userDAO);
+        persist(GroupRepository.class, dbi.onDemand(GroupDAO.class));
 
         try (Handle h = dbi.open()) {
             h.execute("create table t_group (group_id int primary key, name varchar(100))");
@@ -51,7 +52,7 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
         }
 
 
-        env.jersey().register(new UserResource(new UserRepository()));
+        env.jersey().register(new UserResource(userDAO));
     }
 
     public static class AppConfiguration extends Configuration {

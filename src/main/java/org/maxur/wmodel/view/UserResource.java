@@ -2,7 +2,7 @@ package org.maxur.wmodel.view;
 
 import com.codahale.metrics.annotation.Timed;
 import org.maxur.wmodel.domain.User;
-import org.maxur.wmodel.service.Repository;
+import org.maxur.wmodel.domain.UserRepository;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -20,9 +20,9 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private final Repository<User> repository;
+    private final UserRepository repository;
 
-    public UserResource(final Repository<User> repository) {
+    public UserResource(final UserRepository repository) {
         this.repository = repository;
     }
 
