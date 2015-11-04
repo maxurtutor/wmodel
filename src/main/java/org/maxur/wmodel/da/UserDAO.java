@@ -17,13 +17,17 @@ import java.util.List;
 @RegisterMapper(UserMapper.class)
 public interface UserDAO {
 
-    @SqlUpdate("insert into user (name) values (:name)")
+    @SqlUpdate("insert into t_user (name, group_id) values (:name, :group_id)")
     @GetGeneratedKeys
-    int insert(@Bind("name") String name);
+    int insert(@Bind("name") String name, @Bind("group_id") int userId);
 
-    @SqlQuery("select * from user where id = :id")
-    User findById(@Bind("id") int id);
+    @SqlQuery("select * from t_user where user_id = :user_id")
+    User findById(@Bind("user_id") int userId);
 
-    @SqlQuery("select * from user")
+    @SqlQuery("select * from t_user")
     List<User> all();
+
+    @SqlQuery("select count(*) from t_user where group_id = :group_id")
+    Integer findCountUsersByGroup(@Bind("group_id") int groupId);
+
 }
