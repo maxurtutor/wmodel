@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import org.maxur.wmodel.da.GroupDAO;
 import org.maxur.wmodel.da.UserDAO;
 import org.maxur.wmodel.domain.User;
+import org.maxur.wmodel.service.UserService;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 
@@ -13,22 +14,23 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static java.util.Arrays.stream;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
  * @author myunusov
  * @version 1.0
  * @since <pre>04.11.2015</pre>
- */ // The actual service
+ */
 @Path("/api/user")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private final UserDAO userDAO;
-    private final GroupDAO groupDAO;
+    private final UserService service;
 
     public UserResource(final DBI dbi) {
-        this.userDAO = dbi.onDemand(UserDAO.class);
-        this.groupDAO = dbi.onDemand(GroupDAO.class);
+        final UserDAO userDAO = dbi.onDemand(UserDAO.class);
+        final GroupDAO groupDAO = dbi.onDemand(GroupDAO.class);
+        this.service = new UserService(userDAO, groupDAO);
 
         try (Handle h = dbi.open()) {
             h.execute("create table t_group (group_id int primary key, name varchar(100))");
@@ -45,35 +47,27 @@ public class UserResource {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response add(User user) {
-        final Integer countUsersByGroup =
-                userDAO.findCountUsersByGroup(user.groupId);
-        if (countUsersByGroup == 5) {
-            return Response.status(400)
-                    .entity("User limit is overflow")
+        try {
+            return Response.ok(service.insert(user)).build();
+        } catch (RuntimeException e) {
+            return Response.status(BAD_REQUEST).entity(e.getMessage())
                     .type("text/plain")
                     .build();
         }
-        return Response
-                .ok(find(userDAO.insert(user.name, user.groupId)))
-                .build();
     }
 
     @Timed
     @GET
     @Path("/{userId}")
     public User find(@PathParam("userId") Integer userId) {
-        final User user = userDAO.findById(userId);
-        user.setGroup(groupDAO.findGroupById(user.groupId));
-        return user;
+        return service.find(userId);
     }
 
     @Timed
     @GET
     @Path("/all")
     public List<User> all() {
-        final List<User> users = userDAO.all();
-        users.stream().forEach(u -> u.setGroup(groupDAO.findGroupById(u.groupId)));
-        return users;
+        return service.findAll();
     }
 
 
