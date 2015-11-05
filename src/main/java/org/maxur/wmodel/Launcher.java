@@ -11,6 +11,7 @@ import io.dropwizard.setup.Environment;
 import org.h2.tools.RunScript;
 import org.maxur.wmodel.dao.GroupDAO;
 import org.maxur.wmodel.dao.UserDAO;
+import org.maxur.wmodel.service.UserService;
 import org.maxur.wmodel.view.UserResource;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
@@ -58,7 +59,8 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
 
         }
 
-        env.jersey().register(new UserResource(dbi.onDemand(UserDAO.class), dbi.onDemand(GroupDAO.class)));
+        final UserService service = new UserService(dbi.onDemand(UserDAO.class), dbi.onDemand(GroupDAO.class));
+        env.jersey().register(new UserResource(service));
     }
 
     public static class AppConfiguration extends Configuration {

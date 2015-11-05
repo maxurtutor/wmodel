@@ -1,9 +1,8 @@
 package org.maxur.wmodel.view;
 
 import com.codahale.metrics.annotation.Timed;
-import org.maxur.wmodel.dao.GroupDAO;
-import org.maxur.wmodel.dao.UserDAO;
 import org.maxur.wmodel.domain.User;
+import org.maxur.wmodel.service.UserService;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -23,46 +22,38 @@ import static javax.ws.rs.core.Response.status;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private final UserDAO userDAO;
-    private final GroupDAO groupDAO;
+    private final UserService service;
 
-    public UserResource(final UserDAO userDAO, GroupDAO groupDAO) {
-        this.userDAO = userDAO;
-        this.groupDAO = groupDAO;
+    public UserResource(final UserService service) {
+        this.service = service;
     }
 
     @Timed
     @POST
     @Path("/add")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response add(User user) {
-        final Integer count = userDAO.findCountUsersByGroup(user.groupId);
-        if (count == 5) {
-            return status(BAD_REQUEST)
-                    .entity("More users than allowed in group")
+        try {
+            return ok(service.insert(user)).build();
+        } catch (RuntimeException e) {
+            return status(BAD_REQUEST).entity(e.getMessage())
                     .type("text/plain")
                     .build();
         }
-        return ok(find(userDAO.insert(user.name, user.groupId)))
-                .build();
     }
 
     @Timed
     @GET
     @Path("/{userId}")
     public User find(@PathParam("userId") Integer userId) {
-        final User user = userDAO.findById(userId);
-        user.groupName = groupDAO.findGroupById(user.groupId).name;
-        return user;
+        return service.find(userId);
     }
 
     @Timed
     @GET
     @Path("/all")
     public List<User> all() {
-        final List<User> users = userDAO.all();
-        users.stream().forEach(u -> u.groupName = groupDAO.findGroupById(u.groupId).name);
-        return users;
+        return service.findAll();
     }
-
 
 }
