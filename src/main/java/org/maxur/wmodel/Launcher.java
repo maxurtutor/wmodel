@@ -9,6 +9,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
 import org.h2.tools.RunScript;
+import org.maxur.wmodel.dao.GroupDAO;
 import org.maxur.wmodel.dao.UserDAO;
 import org.maxur.wmodel.view.UserResource;
 import org.skife.jdbi.v2.DBI;
@@ -22,7 +23,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.SQLException;
 
-import static java.util.Arrays.stream;
+import static java.util.Arrays.asList;
 
 /**
  * @author myunusov
@@ -46,12 +47,18 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
             ) {
                 RunScript.execute(h.getConnection(), reader);
             }
-            String[] names = {"Ivanov", "Petrov", "Sidorov"};
-            stream(names)
-                    .forEach(name -> h.insert("insert into user (name) values (?)", name));
+
+            asList("developers", "managers")
+                    .stream()
+                    .forEach(name -> h.insert("INSERT INTO t_group (name) VALUES (?)", name));
+
+            asList("Ivanov", "Petrov", "Sidorov")
+                    .stream()
+                    .forEach(name -> h.insert("INSERT INTO t_user (name, group_id) VALUES (?, ?)", name, 1));
+
         }
 
-        env.jersey().register(new UserResource(dbi.onDemand(UserDAO.class)));
+        env.jersey().register(new UserResource(dbi.onDemand(UserDAO.class), dbi.onDemand(GroupDAO.class)));
     }
 
     public static class AppConfiguration extends Configuration {

@@ -10,13 +10,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class User {
 
     @JsonProperty
-    public final int id;
+    public int id;
 
     @JsonProperty
-    public final String name;
+    public String name;
 
-    public User(int id, String name) {
+    @JsonProperty
+    public int groupId;
+
+    @JsonProperty
+    public String groupName;
+
+    @SuppressWarnings("unused")
+    public User() {
+    }
+
+    public User(int id, String name, int groupId) {
         this.id = id;
         this.name = name;
+        this.groupId = groupId;
     }
 }
