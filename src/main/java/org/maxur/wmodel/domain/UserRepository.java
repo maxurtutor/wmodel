@@ -9,13 +9,13 @@ import java.util.List;
  */
 public interface UserRepository {
 
-    User find(final Integer userId);
+    User find(final String userId);
 
     List<User> findAll();
 
-    Integer findCountUsersByGroup(Integer groupId);
+    Integer findCountUsersByGroup(String groupId);
 
-    Integer insert(String name, Integer userId);
+    void insert(String userId, String name, String groupId);
 
     void amend(User user);
 

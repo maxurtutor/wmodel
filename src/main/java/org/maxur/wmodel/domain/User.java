@@ -1,5 +1,7 @@
 package org.maxur.wmodel.domain;
 
+import java.util.Objects;
+
 import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 
 /**
@@ -10,17 +12,26 @@ import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 public class User extends Entity {
 
     private final String name;
-    private final int groupId;
+    private String groupId;
     private Group group;
 
-    private User(int id, String name, int groupId) {
+    private User(String id, String name, String groupId) {
         super(id);
         this.name = name;
         this.groupId = groupId;
     }
 
-    public static User make(int id, String name, int groupId) {
+    private User(String name, String groupId) {
+        this.name = name;
+        this.groupId = groupId;
+    }
+
+    public static User make(String id, String name, String groupId) {
         return new User(id, name, groupId);
+    }
+
+    public static User makeNew(String name, String groupId) {
+        return new User(name, groupId);
     }
 
     public Group getGroup() {
@@ -31,23 +42,22 @@ public class User extends Entity {
         return this.group;
     }
 
-    public User insert() throws ValidationException {
+    public void insert() throws ValidationException {
         validate(groupId);
-        Integer id = service(UserRepository.class).insert(name, groupId);
-        return new User(id, name, groupId);
+        service(UserRepository.class).insert(getId(), name, groupId);
     }
 
-    public User moveTo(int newGroupId) throws ValidationException {
-        if (this.groupId == newGroupId) {
-            return this;
+    public void moveTo(String newGroupId) throws ValidationException {
+        if (Objects.equals(this.groupId, newGroupId)) {
+            return;
         }
         validate(newGroupId);
-        final User user = new User(getId(), name, newGroupId);
-        service(UserRepository.class).amend(user);
-        return user;
+        this.group = null;
+        this.groupId = newGroupId;
+        service(UserRepository.class).amend(this);
     }
 
-    private void validate(int groupId) throws ValidationException {
+    private void validate(String groupId) throws ValidationException {
         final Integer count = service(UserRepository.class).findCountUsersByGroup(groupId);
         if (count == 5) {
             throw new ValidationException("More users than allowed in group");
@@ -56,11 +66,6 @@ public class User extends Entity {
 
     public String getName() {
         return name;
-    }
-
-    @SuppressWarnings("unused")
-    public int getGroupId() {
-        return groupId;
     }
 }
 

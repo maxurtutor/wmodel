@@ -5,7 +5,8 @@ import org.maxur.wmodel.domain.ServiceLocatorProvider;
 import org.maxur.wmodel.domain.User;
 import org.maxur.wmodel.domain.UserRepository;
 import org.maxur.wmodel.domain.ValidationException;
-import org.maxur.wmodel.view.dto.UserDTO;
+import org.maxur.wmodel.view.dto.UserRequestDTO;
+import org.maxur.wmodel.view.dto.UserResponseDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -34,38 +35,49 @@ public class UserResource {
     }
 
     @Timed
-    @PUT
+    @GET
+    @Path("/all")
+    public List<UserResponseDTO> all() {
+        return repository
+                .findAll()
+                .stream()
+                .map(UserResponseDTO::from)
+                .collect(toList());
+    }
+
+    @Timed
+    @GET
     @Path("/{userId}")
-    public UserDTO move(@PathParam("userId") Integer userId, Integer groupId) throws ValidationException {
+    public UserResponseDTO find(@PathParam("userId") String userId) {
         final User user = repository.find(userId);
-        return UserDTO.from(user.moveTo(groupId));
+        checkNotNull(user);
+        return UserResponseDTO.from(user);
     }
 
     @Timed
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public UserDTO add(UserDTO dto) throws ValidationException {
+    public UserResponseDTO add(UserRequestDTO dto) throws ValidationException {
         final User user = dto.assemble();
-        return UserDTO.from(user.insert());
+        user.insert();
+        return UserResponseDTO.from(user);
     }
 
     @Timed
-    @GET
+    @PUT
     @Path("/{userId}")
-    public UserDTO find(@PathParam("userId") Integer userId) {
-        return UserDTO.from(repository.find(userId));
+    public UserResponseDTO move(@PathParam("userId") String userId, String groupId) throws ValidationException {
+        final User user = repository.find(userId);
+        checkNotNull(user);
+        user.moveTo(groupId);
+        return UserResponseDTO.from(user);
     }
 
-    @Timed
-    @GET
-    @Path("/all")
-    public List<UserDTO> all() {
-        return repository
-            .findAll()
-            .stream()
-            .map(UserDTO::from)
-            .collect(toList());
+    private void checkNotNull(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
     }
 
 }

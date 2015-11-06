@@ -1,5 +1,7 @@
 package org.maxur.wmodel.domain;
 
+import java.util.UUID;
+
 /**
  * @author myunusov
  * @version 1.0
@@ -7,13 +9,17 @@ package org.maxur.wmodel.domain;
  */
 public class Entity {
 
-    private final int id;
+    private final String id;
 
-    public Entity(int id) {
+    public Entity() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public Entity(String id) {
         this.id = id;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

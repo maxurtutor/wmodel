@@ -9,25 +9,25 @@ import org.maxur.wmodel.domain.User;
  * @since <pre>04.11.2015</pre>
  */
 @SuppressWarnings("unused")
-public class UserDTO {
+public class UserResponseDTO {
 
     @JsonProperty
-    public int id;
+    public String id;
 
     @JsonProperty
     public String name;
 
     @JsonProperty
-    public int groupId;
+    public String groupId;
 
     @JsonProperty
     public String groupName;
 
-    public UserDTO() {
+    public UserResponseDTO() {
     }
 
-    public static UserDTO from(final User user) {
-        final UserDTO dto = new UserDTO();
+    public static UserResponseDTO from(final User user) {
+        final UserResponseDTO dto = new UserResponseDTO();
         dto.id = user.getId();
         dto.name = user.getName();
         dto.groupId = user.getGroup().getId();
@@ -35,7 +35,4 @@ public class UserDTO {
         return dto;
     }
 
-    public User assemble() {
-        return User.make(id, name, groupId);
-    }
 }

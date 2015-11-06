@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 
@@ -62,13 +63,15 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
                 RunScript.execute(h.getConnection(), reader);
             }
 
-            asList("developers", "managers")
-                    .stream()
-                    .forEach(name -> h.insert("INSERT INTO t_group (name) VALUES (?)", name));
+            final String id1 = UUID.randomUUID().toString();
+            final String id2 = UUID.randomUUID().toString();
+            h.insert("INSERT INTO t_group (group_id, name) VALUES (?, ?)", id1, "developers");
+            h.insert("INSERT INTO t_group (group_id, name) VALUES (?, ?)", id2, "managers");
 
             asList("Ivanov", "Petrov", "Sidorov")
                     .stream()
-                    .forEach(name -> h.insert("INSERT INTO t_user (name, group_id) VALUES (?, ?)", name, 1));
+                    .forEach(name -> h.insert("INSERT INTO t_user (user_id, name, group_id) VALUES (?, ?, ?)",
+                            UUID.randomUUID().toString(), name, id1));
 
         }
 
