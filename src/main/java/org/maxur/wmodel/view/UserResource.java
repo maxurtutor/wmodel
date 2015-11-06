@@ -5,6 +5,7 @@ import org.maxur.wmodel.domain.User;
 import org.maxur.wmodel.domain.ValidationException;
 import org.maxur.wmodel.service.UserService;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -19,12 +20,13 @@ import java.util.List;
  * @version 1.0
  * @since <pre>04.11.2015</pre>
  */
-@Path("/api/user")
+@Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
     private final UserService service;
 
+    @Inject
     public UserResource(final UserService service) {
         this.service = service;
     }
