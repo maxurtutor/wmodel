@@ -15,12 +15,14 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.h2.tools.RunScript;
 import org.maxur.wmodel.dao.GroupDAO;
 import org.maxur.wmodel.dao.UserDAO;
+import org.maxur.wmodel.domain.ServiceLocatorProvider;
 import org.maxur.wmodel.service.UserService;
 import org.maxur.wmodel.view.RuntimeExceptionHandler;
 import org.maxur.wmodel.view.ValidationExceptionHandler;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 
+import javax.inject.Singleton;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -69,7 +71,6 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
 
         }
 
-        final UserService service = new UserService(dbi.onDemand(UserDAO.class), dbi.onDemand(GroupDAO.class));
         env.jersey().register(RuntimeExceptionHandler.class);
         env.jersey().register(ValidationExceptionHandler.class);
         env.jersey().packages(getClass().getPackage().getName());
@@ -77,7 +78,10 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
             @Override
             protected void configure() {
                 bind(env.lifecycle()).to(LifecycleEnvironment.class);
-                bind(service).to(UserService.class);
+                bind(dbi.onDemand(UserDAO.class)).to(UserDAO.class);
+                bind(dbi.onDemand(GroupDAO.class)).to(GroupDAO.class);
+                bind(UserService.class).to(UserService.class).in(Singleton.class);
+                bind(ServiceLocatorProvider.class).to(ServiceLocatorProvider.class).in(Singleton.class);
             }
         });
     }

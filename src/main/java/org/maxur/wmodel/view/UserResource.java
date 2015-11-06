@@ -1,6 +1,7 @@
 package org.maxur.wmodel.view;
 
 import com.codahale.metrics.annotation.Timed;
+import org.maxur.wmodel.domain.ServiceLocatorProvider;
 import org.maxur.wmodel.domain.User;
 import org.maxur.wmodel.domain.ValidationException;
 import org.maxur.wmodel.service.UserService;
@@ -27,6 +28,9 @@ public class UserResource {
     private final UserService service;
 
     @Inject
+    private ServiceLocatorProvider instance;
+
+    @Inject
     public UserResource(final UserService service) {
         this.service = service;
     }
@@ -36,7 +40,7 @@ public class UserResource {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     public User add(User user) throws ValidationException {
-        return service.insert(user);
+        return user.insert();
     }
 
     @Timed

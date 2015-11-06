@@ -1,10 +1,11 @@
 package org.maxur.wmodel.service;
 
-import org.maxur.wmodel.dao.GroupDAO;
+import org.jvnet.hk2.annotations.Service;
 import org.maxur.wmodel.dao.UserDAO;
 import org.maxur.wmodel.domain.User;
-import org.maxur.wmodel.domain.ValidationException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -12,34 +13,22 @@ import java.util.List;
  * @version 1.0
  * @since <pre>04.11.2015</pre>
  */
+@Service
+@Singleton
 public class UserService {
 
     private final UserDAO userDAO;
 
-    private final GroupDAO groupDAO;
-
-    public UserService(final UserDAO userDAO, final GroupDAO groupDAO) {
+    @Inject
+    public UserService(final UserDAO userDAO) {
         this.userDAO = userDAO;
-        this.groupDAO = groupDAO;
-    }
-
-    public User insert(final User user) throws ValidationException {
-        final Integer count = userDAO.findCountUsersByGroup(user.groupId);
-        if (count == 5) {
-            throw new ValidationException("More users than allowed in group");
-        }
-        return (find(userDAO.insert(user.name, user.groupId)));
     }
 
     public User find(final Integer userId) {
-        final User user = userDAO.findById(userId);
-        user.groupName = groupDAO.findGroupById(user.groupId).name;
-        return user;
+        return userDAO.findById(userId);
     }
 
     public List<User> findAll() {
-        final List<User> users = userDAO.all();
-        users.stream().forEach(u -> u.groupName = groupDAO.findGroupById(u.groupId).name);
-        return users;
+        return userDAO.all();
     }
 }
