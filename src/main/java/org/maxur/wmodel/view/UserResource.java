@@ -4,7 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import org.maxur.wmodel.domain.ServiceLocatorProvider;
 import org.maxur.wmodel.domain.User;
 import org.maxur.wmodel.domain.ValidationException;
-import org.maxur.wmodel.service.UserService;
+import org.maxur.wmodel.domain.UserRepository;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -25,13 +25,13 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private final UserService service;
+    private final UserRepository service;
 
     @Inject
     private ServiceLocatorProvider instance;
 
     @Inject
-    public UserResource(final UserService service) {
+    public UserResource(final UserRepository service) {
         this.service = service;
     }
 

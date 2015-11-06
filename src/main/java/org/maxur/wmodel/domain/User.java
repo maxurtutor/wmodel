@@ -1,8 +1,6 @@
 package org.maxur.wmodel.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.maxur.wmodel.dao.GroupDAO;
-import org.maxur.wmodel.dao.UserDAO;
 
 import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 
@@ -62,20 +60,20 @@ public class User {
     @JsonProperty
     public String getGroupName() {
         if (groupName == null) {
-            GroupDAO groupDAO = service(GroupDAO.class);
-            groupName = groupDAO.findGroupById(groupId).getName();
+            GroupRepository repository = service(GroupRepository.class);
+            groupName = repository.find(groupId).getName();
         }
         return groupName;
     }
 
 
     public User insert() throws ValidationException {
-        final UserDAO userDAO = service(UserDAO.class);
-        final Integer count = userDAO.findCountUsersByGroup(this.groupId);
+        final UserRepository repository = service(UserRepository.class);
+        final Integer count = repository.findCountUsersByGroup(this.groupId);
         if (count == 5) {
             throw new ValidationException("More users than allowed in group");
         }
-        this.id = userDAO.insert(this.name, this.groupId);
+        this.id = repository.insert(this.name, this.groupId);
         return this;
     }
 }

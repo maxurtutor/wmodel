@@ -1,6 +1,7 @@
 package org.maxur.wmodel.dao;
 
 import org.maxur.wmodel.domain.Group;
+import org.maxur.wmodel.domain.GroupRepository;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -16,10 +17,10 @@ import java.sql.SQLException;
  * @since <pre>04.11.2015</pre>
  */
 @RegisterMapper(GroupDAO.GroupMapper.class)
-public interface GroupDAO {
+public interface GroupDAO extends GroupRepository {
 
     @SqlQuery("SELECT * FROM t_group WHERE group_id = :group_id")
-    Group findGroupById(@Bind("group_id") int groupId);
+    Group find(@Bind("group_id") Integer groupId);
 
     class GroupMapper implements ResultSetMapper<Group> {
 
