@@ -12,7 +12,9 @@ import org.h2.tools.RunScript;
 import org.maxur.wmodel.dao.GroupDAO;
 import org.maxur.wmodel.dao.UserDAO;
 import org.maxur.wmodel.service.UserService;
+import org.maxur.wmodel.view.RuntimeExceptionHandler;
 import org.maxur.wmodel.view.UserResource;
+import org.maxur.wmodel.view.ValidationExceptionHandler;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 
@@ -60,6 +62,8 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
         }
 
         final UserService service = new UserService(dbi.onDemand(UserDAO.class), dbi.onDemand(GroupDAO.class));
+        env.jersey().register(RuntimeExceptionHandler.class);
+        env.jersey().register(ValidationExceptionHandler.class);
         env.jersey().register(new UserResource(service));
     }
 

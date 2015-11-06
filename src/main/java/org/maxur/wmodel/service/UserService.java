@@ -3,6 +3,7 @@ package org.maxur.wmodel.service;
 import org.maxur.wmodel.dao.GroupDAO;
 import org.maxur.wmodel.dao.UserDAO;
 import org.maxur.wmodel.domain.User;
+import org.maxur.wmodel.domain.ValidationException;
 
 import java.util.List;
 
@@ -22,10 +23,10 @@ public class UserService {
         this.groupDAO = groupDAO;
     }
 
-    public User insert(final User user) {
+    public User insert(final User user) throws ValidationException {
         final Integer count = userDAO.findCountUsersByGroup(user.groupId);
         if (count == 5) {
-            throw new IllegalStateException("More users than allowed in group");
+            throw new ValidationException("More users than allowed in group");
         }
         return (find(userDAO.insert(user.name, user.groupId)));
     }

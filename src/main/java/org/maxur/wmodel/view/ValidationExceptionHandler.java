@@ -1,0 +1,39 @@
+package org.maxur.wmodel.view;
+
+import org.maxur.wmodel.domain.ValidationException;
+import org.slf4j.Logger;
+
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import java.util.List;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static org.maxur.wmodel.view.Incident.incidents;
+import static org.slf4j.LoggerFactory.getLogger;
+
+/**
+ * @author Maxim Yunusov
+ * @version 1.0
+ * @since <pre>11/6/2015</pre>
+ */
+public class ValidationExceptionHandler implements ExceptionMapper<ValidationException> {
+
+    private static final Logger LOGGER = getLogger(ValidationExceptionHandler.class);
+
+    @Override
+    public Response toResponse(ValidationException exception) {
+        LOGGER.error(exception.getMessage(), exception);
+        return Response
+            .status(BAD_REQUEST)
+            .type(APPLICATION_JSON)
+            .entity(makeErrorEntity(exception))
+            .build();
+    }
+
+    private GenericEntity<List<Incident>> makeErrorEntity(final ValidationException exception) {
+        return new GenericEntity<List<Incident>>(incidents("Invalid data", exception.getMessage())) {
+        };
+    }
+}
