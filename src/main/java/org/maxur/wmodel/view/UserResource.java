@@ -3,8 +3,8 @@ package org.maxur.wmodel.view;
 import com.codahale.metrics.annotation.Timed;
 import org.maxur.wmodel.domain.ServiceLocatorProvider;
 import org.maxur.wmodel.domain.User;
-import org.maxur.wmodel.service.UserService;
-import org.maxur.wmodel.service.ValidationException;
+import org.maxur.wmodel.domain.UserRepository;
+import org.maxur.wmodel.domain.ValidationException;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -21,14 +21,14 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private final UserService service;
+    private final UserRepository repository;
 
     @Inject
     private ServiceLocatorProvider instance;
 
     @Inject
-    public UserResource(final UserService service) {
-        this.service = service;
+    public UserResource(final UserRepository repository) {
+        this.repository = repository;
     }
 
     @Timed
@@ -43,14 +43,14 @@ public class UserResource {
     @GET
     @Path("/user/{id}")
     public User find(@PathParam("id") Integer userId) throws ValidationException {
-        return service.find(userId);
+        return repository.find(userId);
     }
 
     @Timed
     @GET
     @Path("/users")
     public List<User> all() {
-        return service.findAll();
+        return repository.findAll();
     }
 
 }

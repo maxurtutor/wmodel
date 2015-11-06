@@ -14,8 +14,11 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.h2.tools.RunScript;
+import org.maxur.wmodel.dao.GroupRepositoryImpl;
+import org.maxur.wmodel.dao.UserRepositoryImpl;
+import org.maxur.wmodel.domain.GroupRepository;
 import org.maxur.wmodel.domain.ServiceLocatorProvider;
-import org.maxur.wmodel.service.UserService;
+import org.maxur.wmodel.domain.UserRepository;
 import org.maxur.wmodel.view.RuntimeExceptionHandler;
 import org.maxur.wmodel.view.UserResource;
 import org.maxur.wmodel.view.ValidationExceptionHandler;
@@ -88,8 +91,9 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
             @Override
             protected void configure() {
                 bind(env.lifecycle()).to(LifecycleEnvironment.class);
-                bind(UserService.class).to(UserService.class).in(Singleton.class);
                 bind(dbi).to(DBI.class);
+                bind(UserRepositoryImpl.class).to(UserRepository.class).in(Singleton.class);
+                bind(GroupRepositoryImpl.class).to(GroupRepository.class).in(Singleton.class);
                 bind(ServiceLocatorProvider.class).to(ServiceLocatorProvider.class).in(Singleton.class);
             }
         };

@@ -8,25 +8,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since <pre>04.11.2015</pre>
  */
 @SuppressWarnings("unused")
-public class Group {
-
-    @JsonProperty
-    private int id;
+public class Group extends Entity {
 
     @JsonProperty
     private String name;
 
     public Group(int id, String name) {
-        this.id = id;
+        super(id);
         this.name = name;
-    }
-
-    public int getGroupId() {
-        return id;
-    }
-
-    public void setGroupId(int groupId) {
-        this.id = groupId;
     }
 
     public String getName() {

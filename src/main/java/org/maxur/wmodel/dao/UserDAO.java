@@ -3,6 +3,7 @@ package org.maxur.wmodel.dao;
 import org.maxur.wmodel.domain.User;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.sqlobject.Bind;
+import org.skife.jdbi.v2.sqlobject.BindBean;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
@@ -21,18 +22,18 @@ import java.util.List;
 @RegisterMapper(UserDAO.UserMapper.class)
 public interface UserDAO {
 
-    @SqlUpdate("INSERT INTO t_user (name, group_id) VALUES (:name, :group_id)")
+    @SqlUpdate("INSERT INTO t_user (name, group_id) VALUES (:name, :groupId)")
     @GetGeneratedKeys
-    int insert(@Bind("name") String name, @Bind("group_id") int groupId);
+    Integer insert(@BindBean User user);
 
-    @SqlQuery("SELECT * FROM t_user WHERE user_id = :id")
-    User findById(@Bind("id") int id);
+    @SqlQuery("SELECT * FROM t_user WHERE user_id = :userId")
+    User find(@Bind("userId") Integer userId);
 
     @SqlQuery("SELECT * FROM t_user")
     List<User> findAll();
 
-    @SqlQuery("SELECT count(*) FROM t_user WHERE group_id = :group_id")
-    Integer findCountUsersByGroup(@Bind("group_id") int groupId);
+    @SqlQuery("SELECT count(*) FROM t_user WHERE group_id = :groupId")
+    Integer findCountUsersByGroup(@Bind("groupId") Integer groupId);
 
     class UserMapper implements ResultSetMapper<User> {
         public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {

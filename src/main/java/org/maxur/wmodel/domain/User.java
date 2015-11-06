@@ -1,10 +1,6 @@
 package org.maxur.wmodel.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.maxur.wmodel.dao.GroupDAO;
-import org.maxur.wmodel.dao.UserDAO;
-import org.maxur.wmodel.service.ValidationException;
-import org.skife.jdbi.v2.DBI;
 
 import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 
@@ -14,10 +10,7 @@ import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
  * @since <pre>04.11.2015</pre>
  */
 @SuppressWarnings("unused")
-public class User {
-
-    @JsonProperty
-    private int id;
+public class User extends Entity {
 
     @JsonProperty
     private String name;
@@ -25,24 +18,15 @@ public class User {
     @JsonProperty
     private int groupId;
 
-
     private String groupName;
 
     public User() {
     }
 
     public User(int id, String name, int groupId) {
-        this.id = id;
+        super(id);
         this.name = name;
         this.groupId = groupId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -62,29 +46,21 @@ public class User {
     }
 
     @JsonProperty
-    public String getGroupName() {
+    public String getGroupName() throws NotFoundException {
         if (groupName == null) {
-            groupName = groupDAO().findById(groupId).getName();
+            GroupRepository repository = service(GroupRepository.class);
+            groupName = repository.find(groupId).getName();
         }
         return groupName;
     }
 
     public User insert() throws ValidationException {
-        final UserDAO userDAO = userDAO();
-        final Integer count = userDAO.findCountUsersByGroup(this.groupId);
+        final UserRepository repository = service(UserRepository.class);
+        final Integer count = repository.findCountUsersByGroup(this.groupId);
         if (count == 5) {
             throw new ValidationException("More users than allowed in group");
         }
-        this.id = userDAO.insert(this.name, this.groupId);
+        this.id = repository.insert(this);
         return this;
-    }
-
-
-    private GroupDAO groupDAO() {
-        return service(DBI.class).onDemand(GroupDAO.class);
-    }
-
-    private UserDAO userDAO() {
-        return service(DBI.class).onDemand(UserDAO.class);
     }
 }

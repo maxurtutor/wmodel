@@ -1,4 +1,4 @@
-package org.maxur.wmodel.service;
+package org.maxur.wmodel.domain;
 
 /**
  * @author Maxim Yunusov

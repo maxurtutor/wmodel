@@ -1,7 +1,7 @@
 package org.maxur.wmodel.view;
 
-import org.maxur.wmodel.service.NotFoundException;
-import org.maxur.wmodel.service.ValidationException;
+import org.maxur.wmodel.domain.NotFoundException;
+import org.maxur.wmodel.domain.ValidationException;
 import org.slf4j.Logger;
 
 import javax.ws.rs.core.GenericEntity;
