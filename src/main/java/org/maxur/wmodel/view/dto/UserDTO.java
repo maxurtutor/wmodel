@@ -1,7 +1,7 @@
 package org.maxur.wmodel.view.dto;
 
-    import com.fasterxml.jackson.annotation.JsonProperty;
-    import org.maxur.wmodel.domain.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.maxur.wmodel.domain.User;
 
 /**
  * @author myunusov
@@ -30,7 +30,7 @@ public class UserDTO {
         final UserDTO dto = new UserDTO();
         dto.id = user.getId();
         dto.name = user.getName();
-        dto.groupId = user.getGroup().getGroupId();
+        dto.groupId = user.getGroup().getId();
         dto.groupName = user.getGroup().getName();
         return dto;
     }

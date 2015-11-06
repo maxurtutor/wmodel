@@ -7,15 +7,14 @@ import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
  * @version 1.0
  * @since <pre>04.11.2015</pre>
  */
-public class User {
+public class User extends Entity {
 
     private final String name;
-    private int groupId;
-    private int id;
+    private final int groupId;
     private Group group;
 
     private User(int id, String name, int groupId) {
-        this.id = id;
+        super(id);
         this.name = name;
         this.groupId = groupId;
     }
@@ -34,17 +33,18 @@ public class User {
 
     public User insert() throws ValidationException {
         validate(groupId);
-        this.id = service(UserRepository.class).insert(name, groupId);
-        return this;
+        Integer id = service(UserRepository.class).insert(name, groupId);
+        return new User(id, name, groupId);
     }
 
-    public void moveTo(int newGroupId) throws ValidationException {
+    public User moveTo(int newGroupId) throws ValidationException {
         if (this.groupId == newGroupId) {
-            return;
+            return this;
         }
         validate(newGroupId);
-        this.groupId = newGroupId;
-        service(UserRepository.class).amend(this);
+        final User user = new User(getId(), name, newGroupId);
+        service(UserRepository.class).amend(user);
+        return user;
     }
 
     private void validate(int groupId) throws ValidationException {
@@ -52,10 +52,6 @@ public class User {
         if (count == 5) {
             throw new ValidationException("More users than allowed in group");
         }
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getName() {

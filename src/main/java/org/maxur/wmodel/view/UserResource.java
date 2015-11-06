@@ -8,13 +8,7 @@ import org.maxur.wmodel.domain.ValidationException;
 import org.maxur.wmodel.view.dto.UserDTO;
 
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -44,8 +38,7 @@ public class UserResource {
     @Path("/{userId}")
     public UserDTO move(@PathParam("userId") Integer userId, Integer groupId) throws ValidationException {
         final User user = repository.find(userId);
-        user.moveTo(groupId);
-        return UserDTO.from(user);
+        return UserDTO.from(user.moveTo(groupId));
     }
 
     @Timed
