@@ -4,6 +4,7 @@ import org.maxur.wmodel.domain.User;
 import org.maxur.wmodel.domain.UserRepository;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.sqlobject.Bind;
+import org.skife.jdbi.v2.sqlobject.BindBean;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
@@ -34,6 +35,9 @@ public interface UserDAO extends UserRepository {
 
     @SqlQuery("SELECT count(*) FROM t_user WHERE group_id = :group_id")
     Integer findCountUsersByGroup(@Bind("group_id") Integer groupId);
+
+    @SqlUpdate("UPDATE t_user SET name = :user.name, group_id = :user.groupId WHERE user_id = :user.id")
+    void amend(@BindBean("user") User user);
 
     class UserMapper implements ResultSetMapper<User> {
         public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {

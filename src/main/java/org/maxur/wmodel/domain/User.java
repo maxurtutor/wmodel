@@ -10,7 +10,7 @@ import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 public class User {
 
     private final String name;
-    private final int groupId;
+    private int groupId;
     private int id;
     private Group group;
 
@@ -32,14 +32,26 @@ public class User {
         return this.group;
     }
 
-    public User insert() throws ValidationException  {
-        final UserRepository repository = service(UserRepository.class);
-        final Integer count = repository.findCountUsersByGroup(this.groupId);
+    public User insert() throws ValidationException {
+        validate(groupId);
+        this.id = service(UserRepository.class).insert(name, groupId);
+        return this;
+    }
+
+    public void moveTo(int newGroupId) throws ValidationException {
+        if (this.groupId == newGroupId) {
+            return;
+        }
+        validate(newGroupId);
+        this.groupId = newGroupId;
+        service(UserRepository.class).amend(this);
+    }
+
+    private void validate(int groupId) throws ValidationException {
+        final Integer count = service(UserRepository.class).findCountUsersByGroup(groupId);
         if (count == 5) {
             throw new ValidationException("More users than allowed in group");
         }
-        this.id = repository.insert(this.name, this.groupId);
-        return this;
     }
 
     public int getId() {
@@ -48,6 +60,11 @@ public class User {
 
     public String getName() {
         return name;
+    }
+
+    @SuppressWarnings("unused")
+    public int getGroupId() {
+        return groupId;
     }
 }
 
