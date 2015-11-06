@@ -37,7 +37,7 @@ public interface UserDAO extends UserRepository {
 
     class UserMapper implements ResultSetMapper<User> {
         public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-            return new User(r.getInt("user_id"), r.getString("name"), r.getInt("group_id"));
+            return User.make(r.getInt("user_id"), r.getString("name"), r.getInt("group_id"));
         }
     }
 }

@@ -3,8 +3,9 @@ package org.maxur.wmodel.view;
 import com.codahale.metrics.annotation.Timed;
 import org.maxur.wmodel.domain.ServiceLocatorProvider;
 import org.maxur.wmodel.domain.User;
-import org.maxur.wmodel.domain.ValidationException;
 import org.maxur.wmodel.domain.UserRepository;
+import org.maxur.wmodel.domain.ValidationException;
+import org.maxur.wmodel.view.dto.UserDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -16,6 +17,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * @author myunusov
  * @version 1.0
@@ -25,36 +28,41 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private final UserRepository service;
+    private final UserRepository repository;
 
     @Inject
     private ServiceLocatorProvider instance;
 
     @Inject
-    public UserResource(final UserRepository service) {
-        this.service = service;
+    public UserResource(final UserRepository repository) {
+        this.repository = repository;
     }
 
     @Timed
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public User add(User user) throws ValidationException {
-        return user.insert();
+    public UserDTO add(UserDTO dto) throws ValidationException {
+        final User user = dto.assemble();
+        return UserDTO.from(user.insert());
     }
 
     @Timed
     @GET
     @Path("/{userId}")
-    public User find(@PathParam("userId") Integer userId) {
-        return service.find(userId);
+    public UserDTO find(@PathParam("userId") Integer userId) {
+        return UserDTO.from(repository.find(userId));
     }
 
     @Timed
     @GET
     @Path("/all")
-    public List<User> all() {
-        return service.findAll();
+    public List<UserDTO> all() {
+        return repository
+            .findAll()
+            .stream()
+            .map(UserDTO::from)
+            .collect(toList());
     }
 
 }

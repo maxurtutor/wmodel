@@ -1,39 +1,31 @@
 package org.maxur.wmodel.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * @author myunusov
  * @version 1.0
  * @since <pre>04.11.2015</pre>
  */
-@SuppressWarnings("unused")
 public class Group {
 
-    @JsonProperty
-    private int groupId;
+    private final int groupId;
 
-    @JsonProperty
-    private String name;
+    private final String name;
 
-    public Group(int groupId, String name) {
+    private Group(int groupId, String name) {
         this.groupId = groupId;
         this.name = name;
+    }
+
+    public static Group make(int groupId, String name) {
+        return new Group(groupId, name);
     }
 
     public int getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
-    }
-
     public String getName() {
         return name;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
+

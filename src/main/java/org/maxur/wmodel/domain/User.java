@@ -1,7 +1,5 @@
 package org.maxur.wmodel.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 
 /**
@@ -9,65 +7,32 @@ import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
  * @version 1.0
  * @since <pre>04.11.2015</pre>
  */
-@SuppressWarnings("unused")
 public class User {
 
-    @JsonProperty
+    private final String name;
+    private final int groupId;
     private int id;
+    private Group group;
 
-    @JsonProperty
-    private String name;
-
-    @JsonProperty
-    private int groupId;
-
-
-    private String groupName;
-
-    public User() {
-    }
-
-    public User(int id, String name, int groupId) {
+    private User(int id, String name, int groupId) {
         this.id = id;
         this.name = name;
         this.groupId = groupId;
     }
 
-    public int getId() {
-        return id;
+    public static User make(int id, String name, int groupId) {
+        return new User(id, name, groupId);
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
-    }
-
-    @JsonProperty
-    public String getGroupName() {
-        if (groupName == null) {
-            GroupRepository repository = service(GroupRepository.class);
-            groupName = repository.find(groupId).getName();
+    public Group getGroup() {
+        if (this.group == null) {
+            final GroupRepository repository = service(GroupRepository.class);
+            this.group = repository.find(groupId);
         }
-        return groupName;
+        return this.group;
     }
 
-
-    public User insert() throws ValidationException {
+    public User insert() throws ValidationException  {
         final UserRepository repository = service(UserRepository.class);
         final Integer count = repository.findCountUsersByGroup(this.groupId);
         if (count == 5) {
@@ -76,4 +41,14 @@ public class User {
         this.id = repository.insert(this.name, this.groupId);
         return this;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
+
+
