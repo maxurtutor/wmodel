@@ -1,5 +1,7 @@
 package org.maxur.wmodel.domain;
 
+import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
+
 /**
  * @author myunusov
  * @version 1.0
@@ -20,6 +22,11 @@ public class Group extends Entity {
 
     public String getName() {
         return name;
+    }
+
+    boolean isComplete() {
+        final Integer count = service(UserRepository.class).findCountUsersByGroup(getId());
+        return count == 5;
     }
 }
 

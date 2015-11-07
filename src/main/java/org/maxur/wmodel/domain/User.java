@@ -42,30 +42,33 @@ public class User extends Entity {
         return this.group;
     }
 
-    public void insert() throws ValidationException {
-        validate(groupId);
-        service(UserRepository.class).insert(getId(), name, groupId);
+    public void insertTo(Group group) throws ValidationException {
+        assignToGroup(group);
+        service(UserRepository.class).insert(this);
     }
 
-    public void moveTo(String newGroupId) throws ValidationException {
-        if (Objects.equals(this.groupId, newGroupId)) {
+    public void moveTo(Group group) throws ValidationException {
+        if (Objects.equals(this.groupId, group.getId())) {
             return;
         }
-        validate(newGroupId);
-        this.group = null;
-        this.groupId = newGroupId;
+        assignToGroup(group);
         service(UserRepository.class).amend(this);
     }
 
-    private void validate(String groupId) throws ValidationException {
-        final Integer count = service(UserRepository.class).findCountUsersByGroup(groupId);
-        if (count == 5) {
+    private void assignToGroup(Group group) throws ValidationException {
+        if (group.isComplete()) {
             throw new ValidationException("More users than allowed in group");
         }
+        this.group = group;
+        this.groupId = group.getId();
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getGroupId() {
+        return groupId;
     }
 }
 

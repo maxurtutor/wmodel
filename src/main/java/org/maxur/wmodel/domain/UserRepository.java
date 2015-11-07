@@ -15,8 +15,7 @@ public interface UserRepository {
 
     Integer findCountUsersByGroup(String groupId);
 
-    void insert(String userId, String name, String groupId);
+    void insert(User user);
 
     void amend(User user);
-
 }

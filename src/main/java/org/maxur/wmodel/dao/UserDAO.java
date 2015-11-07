@@ -31,8 +31,8 @@ public interface UserDAO extends UserRepository {
     @SqlQuery("SELECT count(*) FROM t_user WHERE group_id = :group_id")
     Integer findCountUsersByGroup(@Bind("group_id") String groupId);
 
-    @SqlUpdate("INSERT INTO t_user (user_id, name, group_id) VALUES (:user_id, :name, :group_id)")
-    void insert(@Bind("user_id") String userId, @Bind("name") String name, @Bind("group_id") String groupId);
+    @SqlUpdate("INSERT INTO t_user (user_id, name, group_id) VALUES (:user.id, :user.name, :user.groupId)")
+    void insert(@BindBean("user") User user);
 
     @SqlUpdate("UPDATE t_user SET name = :user.name, group_id = :user.groupId WHERE user_id = :user.id")
     void amend(@BindBean("user") User user);
