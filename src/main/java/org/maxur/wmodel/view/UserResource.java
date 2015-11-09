@@ -12,6 +12,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.maxur.wmodel.domain.Lazy.lazy;
 
 /**
  * @author myunusov
@@ -59,9 +60,9 @@ public class UserResource {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     public UserResponseDTO add(UserRequestDTO dto) throws ValidationException {
-        final User user = dto.assemble();
         final Group group = groupRepository.find(dto.groupId);
         checkNotNull(group, dto.groupId);
+        final User user = User.makeNew(dto.name, lazy(group));
         user.insertTo(group);
         return UserResponseDTO.from(user);
     }

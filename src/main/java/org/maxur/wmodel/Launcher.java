@@ -15,6 +15,7 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.h2.tools.RunScript;
 import org.maxur.wmodel.dao.GroupDAO;
 import org.maxur.wmodel.dao.UserDAO;
+import org.maxur.wmodel.dao.UserRepositoryImpl;
 import org.maxur.wmodel.domain.GroupRepository;
 import org.maxur.wmodel.domain.ServiceLocatorProvider;
 import org.maxur.wmodel.domain.UserRepository;
@@ -82,7 +83,8 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
             @Override
             protected void configure() {
                 bind(env.lifecycle()).to(LifecycleEnvironment.class);
-                bind(dbi.onDemand(UserDAO.class)).to(UserRepository.class);
+                bind(dbi.onDemand(UserDAO.class)).to(UserDAO.class);
+                bind(UserRepositoryImpl.class).to(UserRepository.class);
                 bind(dbi.onDemand(GroupDAO.class)).to(GroupRepository.class);
                 bind(ServiceLocatorProvider.class).to(ServiceLocatorProvider.class).in(Singleton.class);
             }
