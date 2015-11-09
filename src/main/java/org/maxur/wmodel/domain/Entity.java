@@ -7,7 +7,7 @@ import java.util.UUID;
  * @version 1.0
  * @since <pre>06.11.2015</pre>
  */
-public class Entity {
+public abstract class Entity {
 
     private final String id;
 
@@ -23,4 +23,7 @@ public class Entity {
         return id;
     }
 
+    public abstract void insert();
+
+    public abstract void amend();
 }

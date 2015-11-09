@@ -1,7 +1,5 @@
 package org.maxur.wmodel.dao;
 
-import org.maxur.wmodel.domain.Group;
-import org.maxur.wmodel.domain.GroupRepository;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -17,17 +15,28 @@ import java.sql.SQLException;
  * @since <pre>04.11.2015</pre>
  */
 @RegisterMapper(GroupDAO.GroupMapper.class)
-public interface GroupDAO extends GroupRepository {
+public interface GroupDAO {
 
     @SqlQuery("SELECT  g.group_id, g.name, count(*) AS capacity FROM t_group g JOIN t_user WHERE  g.group_id = :group_id GROUP BY g.group_id, g.name;  ")
-    Group find(@Bind("group_id") String groupId);
+    GroupDAODTO find(@Bind("group_id") String groupId);
 
-    class GroupMapper implements ResultSetMapper<Group> {
-
+    class GroupMapper implements ResultSetMapper<GroupDAODTO> {
         @Override
-        public Group map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-            return Group.make(r.getString("group_id"), r.getString("name"), r.getInt("capacity"));
+        public GroupDAODTO map(int index, ResultSet r, StatementContext ctx) throws SQLException {
+            return new GroupDAODTO(r.getString("group_id"), r.getString("name"), r.getInt("capacity"));
         }
+    }
 
+    class GroupDAODTO {
+
+        final String groupId;
+        final int capacity;
+        final String name;
+
+        public GroupDAODTO(String groupId, String name, int capacity) {
+            this.name = name;
+            this.groupId = groupId;
+            this.capacity = capacity;
+        }
     }
 }

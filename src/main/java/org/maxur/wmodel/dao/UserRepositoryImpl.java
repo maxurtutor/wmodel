@@ -1,8 +1,6 @@
 package org.maxur.wmodel.dao;
 
-import org.maxur.wmodel.domain.GroupRepository;
-import org.maxur.wmodel.domain.User;
-import org.maxur.wmodel.domain.UserRepository;
+import org.maxur.wmodel.domain.*;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;
 
@@ -17,29 +15,38 @@ import static org.maxur.wmodel.domain.Lazy.lazy;
  * @version 1.0
  * @since <pre>09.11.2015</pre>
  */
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryImpl extends AbstractRepository implements UserRepository {
 
-    final private UserDAO dao;
     final private GroupRepository groupRepository;
+    private final UnitOfWorkFactory unitOfWorkFactory;
+    final private UserDAO dao;
 
     @Inject
-    public UserRepositoryImpl(UserDAO dao, GroupRepository groupRepository) {
+    public UserRepositoryImpl(UserDAO dao, GroupRepository groupRepository, UnitOfWorkFactory unitOfWorkFactory) {
         this.dao = dao;
         this.groupRepository = groupRepository;
+        this.unitOfWorkFactory = unitOfWorkFactory;
     }
 
     @Override
     public User find(@Bind("user_id") String userId) {
         final UserDAO.UserDAODTO dto = dao.find(userId);
-        return User.make(dto.userId, dto.name, lazy(dto.groupId, groupRepository::find));
+        checkNotNull(dto, userId);
+        final User user = new User(dto.userId, dto.name, makeLazyGroup(dto), this);
+        unitOfWorkFactory.provide().change(user);
+        return user;
     }
 
     @Override
     public List<User> findAll() {
         return dao.findAll()
                 .stream()
-                .map(dto -> User.make(dto.userId, dto.name, lazy(dto.groupId, groupRepository::find)))
+                .map(dto -> new User(dto.userId, dto.name, makeLazyGroup(dto), this))
                 .collect(toList());
+    }
+
+    private Lazy<Group> makeLazyGroup(UserDAO.UserDAODTO dto) {
+        return lazy(dto.groupId, groupRepository::find);
     }
 
     @Override

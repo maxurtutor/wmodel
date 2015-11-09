@@ -3,7 +3,6 @@ package org.maxur.wmodel.domain;
 import java.util.Objects;
 
 import static org.maxur.wmodel.domain.Lazy.lazy;
-import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 
 /**
  * @author myunusov
@@ -13,26 +12,21 @@ import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 public class User extends Entity {
 
     private final String name;
+    private final UserRepository repository;
     private String groupId;
     private Lazy<Group> group;
 
-    private User(String id, String name, Lazy<Group> group) {
+    public User(String id, String name, Lazy<Group> group, UserRepository repository) {
         super(id);
         this.name = name;
         this.group = group;
+        this.repository = repository;
     }
 
-    private User(String name, Lazy<Group> group) {
+    public User(String name, Lazy<Group> group, UserRepository repository) {
         this.name = name;
         this.group = group;
-    }
-
-    public static User make(String id, String name, Lazy<Group> group) {
-        return new User(id, name, group);
-    }
-
-    public static User makeNew(String name, Lazy<Group> group) {
-        return new User(name, group);
+        this.repository = repository;
     }
 
     public Group getGroup() {
@@ -41,7 +35,6 @@ public class User extends Entity {
 
     public void insertTo(Group group) throws ValidationException {
         assignToGroup(group);
-        service(UserRepository.class).insert(this);
     }
 
     public void moveTo(Group group) throws ValidationException {
@@ -49,7 +42,6 @@ public class User extends Entity {
             return;
         }
         assignToGroup(group);
-        service(UserRepository.class).amend(this);
     }
 
     private void assignToGroup(Group group) throws ValidationException {
@@ -58,6 +50,16 @@ public class User extends Entity {
         }
         this.group = lazy(group);
         this.groupId = group.getId();
+    }
+
+    @Override
+    public void insert() {
+        repository.insert(this);
+    }
+
+    @Override
+    public void amend() {
+        repository.amend(this);
     }
 
     public String getName() {

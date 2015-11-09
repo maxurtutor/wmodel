@@ -13,18 +13,18 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.h2.tools.RunScript;
-import org.maxur.wmodel.dao.GroupDAO;
-import org.maxur.wmodel.dao.UserDAO;
-import org.maxur.wmodel.dao.UserRepositoryImpl;
+import org.maxur.wmodel.dao.*;
 import org.maxur.wmodel.domain.GroupRepository;
-import org.maxur.wmodel.domain.ServiceLocatorProvider;
+import org.maxur.wmodel.domain.UnitOfWorkFactory;
+import org.maxur.wmodel.domain.UserFactory;
 import org.maxur.wmodel.domain.UserRepository;
+import org.maxur.wmodel.view.MyApplicationEventListener;
+import org.maxur.wmodel.view.MyRequestEventListener;
 import org.maxur.wmodel.view.RuntimeExceptionHandler;
 import org.maxur.wmodel.view.ValidationExceptionHandler;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 
-import javax.inject.Singleton;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -76,17 +76,25 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
 
         }
 
+        final UnitOfWorkFactory unitOfWorkFactory = new UnitOfWorkFactory();
+
+        MyRequestEventListener.setUnitOfWorkFactory(unitOfWorkFactory);
+
         env.jersey().register(RuntimeExceptionHandler.class);
         env.jersey().register(ValidationExceptionHandler.class);
+        env.jersey().register(MyApplicationEventListener.class);
         env.jersey().packages(getClass().getPackage().getName());
         env.jersey().register(new AbstractBinder() {
             @Override
             protected void configure() {
+
                 bind(env.lifecycle()).to(LifecycleEnvironment.class);
                 bind(dbi.onDemand(UserDAO.class)).to(UserDAO.class);
+                bind(dbi.onDemand(GroupDAO.class)).to(GroupDAO.class);
+                bind(GroupRepositoryImpl.class).to(GroupRepository.class);
                 bind(UserRepositoryImpl.class).to(UserRepository.class);
-                bind(dbi.onDemand(GroupDAO.class)).to(GroupRepository.class);
-                bind(ServiceLocatorProvider.class).to(ServiceLocatorProvider.class).in(Singleton.class);
+                bind(UserFactoryImpl.class).to(UserFactory.class);
+                bind(unitOfWorkFactory).to(UnitOfWorkFactory.class);
             }
         });
     }

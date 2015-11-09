@@ -10,9 +10,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
-import static org.maxur.wmodel.domain.Lazy.lazy;
 
 /**
  * @author myunusov
@@ -25,14 +23,17 @@ public class UserResource {
 
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
+    private final UserFactory userFactory;
 
     @Inject
-    private ServiceLocatorProvider instance;
-
-    @Inject
-    public UserResource(final UserRepository userRepository, final GroupRepository groupRepository) {
+    public UserResource(
+            UserRepository userRepository,
+            GroupRepository groupRepository,
+            UserFactory userFactory
+    ) {
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
+        this.userFactory = userFactory;
     }
 
     @Timed
@@ -51,7 +52,6 @@ public class UserResource {
     @Path("/{userId}")
     public UserResponseDTO find(@PathParam("userId") String userId) {
         final User user = userRepository.find(userId);
-        checkNotNull(user, userId);
         return UserResponseDTO.from(user);
     }
 
@@ -61,8 +61,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public UserResponseDTO add(UserRequestDTO dto) throws ValidationException {
         final Group group = groupRepository.find(dto.groupId);
-        checkNotNull(group, dto.groupId);
-        final User user = User.makeNew(dto.name, lazy(group));
+        final User user = userFactory.create(dto.name, group);
         user.insertTo(group);
         return UserResponseDTO.from(user);
     }
@@ -73,16 +72,8 @@ public class UserResource {
     public UserResponseDTO move(@PathParam("userId") String userId, String groupId) throws ValidationException {
         final User user = userRepository.find(userId);
         final Group group = groupRepository.find(groupId);
-        checkNotNull(user, userId);
-        checkNotNull(group, groupId);
         user.moveTo(group);
         return UserResponseDTO.from(user);
-    }
-
-    private void checkNotNull(Entity entity, String key) {
-        if (entity == null) {
-            throw new IllegalArgumentException(format("Entity '%s' not found", key));
-        }
     }
 
 }
