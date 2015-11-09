@@ -19,14 +19,14 @@ import java.sql.SQLException;
 @RegisterMapper(GroupDAO.GroupMapper.class)
 public interface GroupDAO extends GroupRepository {
 
-    @SqlQuery("SELECT * FROM t_group WHERE group_id = :group_id")
+    @SqlQuery("SELECT  g.group_id, g.name, count(*) AS capacity FROM t_group g JOIN t_user WHERE  g.group_id = :group_id GROUP BY g.group_id, g.name;  ")
     Group find(@Bind("group_id") String groupId);
 
     class GroupMapper implements ResultSetMapper<Group> {
 
         @Override
         public Group map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-            return Group.make(r.getString("group_id"), r.getString("name"));
+            return Group.make(r.getString("group_id"), r.getString("name"), r.getInt("capacity"));
         }
 
     }

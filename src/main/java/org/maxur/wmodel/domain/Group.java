@@ -1,7 +1,5 @@
 package org.maxur.wmodel.domain;
 
-import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
-
 /**
  * @author myunusov
  * @version 1.0
@@ -10,14 +8,16 @@ import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 public class Group extends Entity {
 
     private final String name;
+    private final int capacity;
 
-    private Group(String id, String name) {
+    private Group(String id, String name, int capacity) {
         super(id);
         this.name = name;
+        this.capacity = capacity;
     }
 
-    public static Group make(String id, String name) {
-        return new Group(id, name);
+    public static Group make(String id, String name, int capacity) {
+        return new Group(id, name, capacity);
     }
 
     public String getName() {
@@ -25,8 +25,7 @@ public class Group extends Entity {
     }
 
     boolean isComplete() {
-        final Integer count = service(UserRepository.class).findCountUsersByGroup(getId());
-        return count == 5;
+        return capacity == 5;
     }
 }
 

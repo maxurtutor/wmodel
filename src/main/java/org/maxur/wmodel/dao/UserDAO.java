@@ -28,9 +28,6 @@ public interface UserDAO extends UserRepository {
     @SqlQuery("SELECT * FROM t_user")
     List<User> findAll();
 
-    @SqlQuery("SELECT count(*) FROM t_user WHERE group_id = :group_id")
-    Integer findCountUsersByGroup(@Bind("group_id") String groupId);
-
     @SqlUpdate("INSERT INTO t_user (user_id, name, group_id) VALUES (:user.id, :user.name, :user.groupId)")
     void insert(@BindBean("user") User user);
 

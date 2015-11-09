@@ -13,8 +13,6 @@ public interface UserRepository {
 
     List<User> findAll();
 
-    Integer findCountUsersByGroup(String groupId);
-
     void insert(User user);
 
     void amend(User user);
