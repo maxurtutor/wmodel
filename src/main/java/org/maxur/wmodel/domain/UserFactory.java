@@ -7,5 +7,5 @@ package org.maxur.wmodel.domain;
  */
 public interface UserFactory {
 
-    User create(String name, Group group);
+    User create(String name, GroupImpl group);
 }

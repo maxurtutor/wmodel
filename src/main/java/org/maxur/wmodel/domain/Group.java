@@ -1,37 +1,17 @@
 package org.maxur.wmodel.domain;
 
 /**
- * @author myunusov
+ * @author Maxim Yunusov
  * @version 1.0
- * @since <pre>04.11.2015</pre>
+ * @since <pre>11/10/2015</pre>
  */
-public class Group extends Entity {
+public interface Group {
 
-    private final String name;
-    private final int capacity;
+    String getId();
 
-    public Group(String id, String name, int capacity) {
-        super(id);
-        this.name = name;
-        this.capacity = capacity;
-    }
+    String getName();
 
-    public String getName() {
-        return name;
-    }
+    void insert();
 
-    boolean isComplete() {
-        return capacity == 5;
-    }
-
-    @Override
-    public void insert() {
-        throw new UnsupportedOperationException("This operation is unsopperted yet");
-    }
-
-    @Override
-    public void amend() {
-        throw new UnsupportedOperationException("This operation is unsopperted yet");
-    }
+    void amend();
 }
-

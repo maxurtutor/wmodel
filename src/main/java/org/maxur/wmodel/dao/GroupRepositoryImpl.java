@@ -1,6 +1,6 @@
 package org.maxur.wmodel.dao;
 
-import org.maxur.wmodel.domain.Group;
+import org.maxur.wmodel.domain.GroupImpl;
 import org.maxur.wmodel.domain.GroupRepository;
 
 import javax.inject.Inject;
@@ -20,9 +20,9 @@ public class GroupRepositoryImpl extends AbstractRepository implements GroupRepo
     }
 
     @Override
-    public Group find(String groupId) {
+    public GroupImpl find(String groupId) {
         final GroupDAO.GroupDAODTO dto = dao.find(groupId);
         checkNotNull(dto, groupId);
-        return new Group(dto.groupId, dto.name, dto.capacity);
+        return new GroupImpl(dto.groupId, dto.name, dto.capacity);
     }
 }

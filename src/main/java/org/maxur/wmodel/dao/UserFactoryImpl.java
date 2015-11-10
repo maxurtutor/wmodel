@@ -1,10 +1,12 @@
 package org.maxur.wmodel.dao;
 
-import org.maxur.wmodel.domain.*;
+import org.maxur.wmodel.domain.GroupImpl;
+import org.maxur.wmodel.domain.UnitOfWorkFactory;
+import org.maxur.wmodel.domain.User;
+import org.maxur.wmodel.domain.UserFactory;
+import org.maxur.wmodel.domain.UserRepository;
 
 import javax.inject.Inject;
-
-import static org.maxur.wmodel.domain.Lazy.lazy;
 
 /**
  * @author myunusov
@@ -24,8 +26,8 @@ public class UserFactoryImpl implements UserFactory {
     }
 
     @Override
-    public User create(String name, Group group) {
-        final User user = new User(name, lazy(group), repository);
+    public User create(String name, GroupImpl group) {
+        final User user = new User(name, group, repository);
         unitOfWorkFactory.provide().create(user);
         return user;
     }

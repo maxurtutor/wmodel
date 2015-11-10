@@ -1,4 +1,6 @@
-package org.maxur.wmodel.domain;
+package org.maxur.wmodel.dao;
+
+import org.maxur.wmodel.domain.Entity;
 
 import java.util.function.Function;
 
@@ -40,5 +42,9 @@ public class Lazy<T extends Entity> {
             value = loader.apply(id);
         }
         return value;
+    }
+
+    public String getId() {
+        return id;
     }
 }

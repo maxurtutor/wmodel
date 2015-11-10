@@ -60,7 +60,7 @@ public class UserResource {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     public UserResponseDTO add(UserRequestDTO dto) throws ValidationException {
-        final Group group = groupRepository.find(dto.groupId);
+        final GroupImpl group = groupRepository.find(dto.groupId);
         final User user = userFactory.create(dto.name, group);
         user.insertTo(group);
         return UserResponseDTO.from(user);
@@ -71,7 +71,7 @@ public class UserResource {
     @Path("/{userId}")
     public UserResponseDTO move(@PathParam("userId") String userId, String groupId) throws ValidationException {
         final User user = userRepository.find(userId);
-        final Group group = groupRepository.find(groupId);
+        final GroupImpl group = groupRepository.find(groupId);
         user.moveTo(group);
         return UserResponseDTO.from(user);
     }

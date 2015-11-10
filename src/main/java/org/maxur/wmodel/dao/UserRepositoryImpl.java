@@ -8,7 +8,9 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.maxur.wmodel.domain.Lazy.lazy;
+import static org.maxur.wmodel.dao.LazyInvocationHandler.proxy;
+import static org.maxur.wmodel.dao.Lazy.lazy;
+
 
 /**
  * @author myunusov
@@ -45,8 +47,9 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
                 .collect(toList());
     }
 
-    private Lazy<Group> makeLazyGroup(UserDAO.UserDAODTO dto) {
-        return lazy(dto.groupId, groupRepository::find);
+    private Group makeLazyGroup(UserDAO.UserDAODTO dto) {
+        final Lazy<GroupImpl> lazy = lazy(dto.groupId, groupRepository::find);
+        return (Group) proxy(Group.class, lazy);
     }
 
     @Override
