@@ -2,6 +2,7 @@ package org.maxur.wmodel.dao;
 
 import org.maxur.wmodel.domain.Group;
 import org.maxur.wmodel.service.GroupRepository;
+import org.skife.jdbi.v2.DBI;
 
 import javax.inject.Inject;
 
@@ -12,17 +13,26 @@ import javax.inject.Inject;
  */
 public class GroupRepositoryImpl extends AbstractRepository implements GroupRepository {
 
-    final private GroupDAO dao;
+    final private DBI dbi;
+
+    private final UnitOfWork unitOfWork;
 
     @Inject
-    public GroupRepositoryImpl(GroupDAO dao) {
-        this.dao = dao;
+    public GroupRepositoryImpl(DBI dbi, UnitOfWork unitOfWork) {
+        this.dbi = dbi;
+        this.unitOfWork = unitOfWork;
     }
 
     @Override
     public Group find(String groupId) {
-        final GroupDAO.GroupDAODTO dto = dao.find(groupId);
+        final GroupDAO.GroupDAODTO dto = dao().find(groupId);
         checkNotNull(dto, groupId);
-        return new Group(dto.groupId, dto.name, dto.capacity);
+        final Group group = new Group(dto.groupId, dto.name, dto.capacity);
+        unitOfWork.change(group);
+        return group;
+    }
+
+    private GroupDAO dao() {
+        return dbi.onDemand(GroupDAO.class);
     }
 }

@@ -11,9 +11,9 @@ import java.util.List;
  */
 public interface DAO {
 
-    void insert(Entity user);
+    void insert(Entity entity);
 
-    void amend(Entity user);
+    void amend(Entity entity);
 
     void insertAll(List<Entity> entities);
 }

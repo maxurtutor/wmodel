@@ -1,4 +1,7 @@
-package org.maxur.wmodel.domain;
+package org.maxur.wmodel.service;
+
+import org.maxur.wmodel.domain.Group;
+import org.maxur.wmodel.domain.User;
 
 /**
  * @author myunusov

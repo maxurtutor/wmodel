@@ -37,7 +37,6 @@ public class Incident implements Serializable {
     }
 
     public static List<Incident> incidents(final String... messages) {
-        MyRequestEventListener.getUnitOfWorkFactory().provide().clear();
         return stream(messages).map(Incident::new).collect(toList());
     }
 

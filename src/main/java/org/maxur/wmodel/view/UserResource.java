@@ -1,8 +1,11 @@
 package org.maxur.wmodel.view;
 
 import com.codahale.metrics.annotation.Timed;
-import org.maxur.wmodel.domain.*;
+import org.maxur.wmodel.domain.Group;
+import org.maxur.wmodel.domain.User;
+import org.maxur.wmodel.domain.ValidationException;
 import org.maxur.wmodel.service.GroupRepository;
+import org.maxur.wmodel.service.UserFactory;
 import org.maxur.wmodel.service.UserRepository;
 import org.maxur.wmodel.view.dto.UserRequestDTO;
 import org.maxur.wmodel.view.dto.UserResponseDTO;

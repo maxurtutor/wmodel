@@ -3,6 +3,8 @@ package org.maxur.wmodel.dao;
 import org.glassfish.hk2.api.Factory;
 import org.skife.jdbi.v2.DBI;
 
+import javax.inject.Inject;
+
 /**
  * @author myunusov
  * @version 1.0
@@ -14,6 +16,7 @@ public class UnitOfWorkFactory implements Factory<UnitOfWork> {
 
     private final ThreadLocal<UnitOfWork> unitOfWork = new ThreadLocal<>();
 
+    @Inject
     public UnitOfWorkFactory(DBI dbi) {
         this.dbi = dbi;
     }

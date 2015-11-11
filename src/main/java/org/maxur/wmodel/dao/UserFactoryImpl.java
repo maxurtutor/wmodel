@@ -2,8 +2,7 @@ package org.maxur.wmodel.dao;
 
 import org.maxur.wmodel.domain.Group;
 import org.maxur.wmodel.domain.User;
-import org.maxur.wmodel.domain.UserFactory;
-import org.maxur.wmodel.service.UserRepository;
+import org.maxur.wmodel.service.UserFactory;
 
 import javax.inject.Inject;
 
@@ -14,20 +13,17 @@ import javax.inject.Inject;
  */
 public class UserFactoryImpl implements UserFactory {
 
-    private final UnitOfWorkFactory unitOfWorkFactory;
-
-    private final UserRepository repository;
+    private final UnitOfWork unitOfWork;
 
     @Inject
-    public UserFactoryImpl(UnitOfWorkFactory unitOfWorkFactory, UserRepository repository) {
-        this.unitOfWorkFactory = unitOfWorkFactory;
-        this.repository = repository;
+    public UserFactoryImpl(UnitOfWork unitOfWork) {
+        this.unitOfWork = unitOfWork;
     }
 
     @Override
     public User create(String name, Group group) {
         final User user = new User(name, group);
-        unitOfWorkFactory.provide().create(user);
+        unitOfWork.create(user);
         return user;
     }
 }

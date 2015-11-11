@@ -13,22 +13,17 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.h2.tools.RunScript;
-import org.maxur.wmodel.dao.GroupDAO;
-import org.maxur.wmodel.dao.GroupRepositoryImpl;
-import org.maxur.wmodel.dao.UserDAO;
-import org.maxur.wmodel.dao.UserFactoryImpl;
-import org.maxur.wmodel.dao.UserRepositoryImpl;
+import org.maxur.wmodel.dao.*;
 import org.maxur.wmodel.service.GroupRepository;
-import org.maxur.wmodel.dao.UnitOfWorkFactory;
-import org.maxur.wmodel.domain.UserFactory;
+import org.maxur.wmodel.service.UserFactory;
 import org.maxur.wmodel.service.UserRepository;
-import org.maxur.wmodel.view.MyApplicationEventListener;
-import org.maxur.wmodel.view.MyRequestEventListener;
 import org.maxur.wmodel.view.RuntimeExceptionHandler;
+import org.maxur.wmodel.view.StopUoWFilter;
 import org.maxur.wmodel.view.ValidationExceptionHandler;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 
+import javax.inject.Singleton;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -67,33 +62,34 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
 
             final String id1 = "group1";
             final String id2 = "group2";
-            h.insert("INSERT INTO t_group (group_id, name) VALUES (?, ?)", id1, "developers");
-            h.insert("INSERT INTO t_group (group_id, name) VALUES (?, ?)", id2, "managers");
-
-
+            h.insert(
+                    "INSERT INTO t_group (group_id, name, update_date) VALUES (?, ?, CURRENT_TIMESTAMP())",
+                    id1,
+                    "developers"
+            );
+            h.insert(
+                    "INSERT INTO t_group (group_id, name, update_date) VALUES (?, ?, CURRENT_TIMESTAMP())",
+                    id2,
+                    "managers"
+            );
             h.insert("INSERT INTO t_user (user_id, name, group_id) VALUES (?, ?, ?)", "user1", "Ivanov", id1);
             h.insert("INSERT INTO t_user (user_id, name, group_id) VALUES (?, ?, ?)", "user2", "Petrov", id1);
             h.insert("INSERT INTO t_user (user_id, name, group_id) VALUES (?, ?, ?)", "user3", "Sidorov", id2);
         }
 
-        final UnitOfWorkFactory unitOfWorkFactory = new UnitOfWorkFactory(dbi);
-
-        MyRequestEventListener.setUnitOfWorkFactory(unitOfWorkFactory);
-
         env.jersey().register(RuntimeExceptionHandler.class);
         env.jersey().register(ValidationExceptionHandler.class);
-        env.jersey().register(MyApplicationEventListener.class);
+        env.jersey().register(StopUoWFilter.class);
         env.jersey().packages(getClass().getPackage().getName());
         env.jersey().register(new AbstractBinder() {
             @Override
             protected void configure() {
                 bind(env.lifecycle()).to(LifecycleEnvironment.class);
-                bind(dbi.onDemand(UserDAO.class)).to(UserDAO.class);
-                bind(dbi.onDemand(GroupDAO.class)).to(GroupDAO.class);
-                bind(GroupRepositoryImpl.class).to(GroupRepository.class);
-                bind(UserRepositoryImpl.class).to(UserRepository.class);
-                bind(UserFactoryImpl.class).to(UserFactory.class);
-                bind(unitOfWorkFactory).to(UnitOfWorkFactory.class);
+                bind(dbi).to(DBI.class);
+                bind(GroupRepositoryImpl.class).to(GroupRepository.class).in(Singleton.class);
+                bind(UserRepositoryImpl.class).to(UserRepository.class).in(Singleton.class);
+                bind(UserFactoryImpl.class).to(UserFactory.class).in(Singleton.class);
+                bindFactory(UnitOfWorkFactory.class).to(UnitOfWork.class).in(Singleton.class);
             }
         });
     }
