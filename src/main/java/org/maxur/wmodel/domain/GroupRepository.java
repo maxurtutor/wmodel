@@ -7,6 +7,6 @@ package org.maxur.wmodel.domain;
  */
 public interface GroupRepository {
 
-    GroupImpl find(String groupId);
+    Group find(String groupId);
 
 }

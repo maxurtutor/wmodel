@@ -1,11 +1,11 @@
 package org.maxur.wmodel.dao;
 
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.InvocationHandler;
 import org.maxur.wmodel.domain.Entity;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Objects;
 
 /**
@@ -19,18 +19,18 @@ class LazyInvocationHandler<T extends Entity> implements InvocationHandler {
 
     private T object;
 
-    public static <C> Object proxy(Class<C> clazz, Lazy lazy) {
-        return Proxy.newProxyInstance(
-            clazz.getClassLoader(),
-            new Class[] {clazz},
-            new LazyInvocationHandler<>(lazy)
-        );
+    public static <C extends Entity> Object proxy(Class<C> clazz, Lazy<C> lazy) {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(clazz);
+        enhancer.setCallback(new LazyInvocationHandler<>(lazy));
+        return enhancer.create();
     }
 
     public LazyInvocationHandler(Lazy<T> lazy) {
         this.object = null;
         this.lazy = lazy;
     }
+
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -65,7 +65,7 @@ class LazyInvocationHandler<T extends Entity> implements InvocationHandler {
     private boolean isEquals(Method method) {
         return method.getName().equals("equals")
             && method.getParameterTypes().length == 1
-            && !boolean.class.equals(method.getReturnType());
+            && boolean.class.equals(method.getReturnType());
     }
 
 }

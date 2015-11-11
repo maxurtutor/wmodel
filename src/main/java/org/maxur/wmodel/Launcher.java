@@ -13,7 +13,11 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.h2.tools.RunScript;
-import org.maxur.wmodel.dao.*;
+import org.maxur.wmodel.dao.GroupDAO;
+import org.maxur.wmodel.dao.GroupRepositoryImpl;
+import org.maxur.wmodel.dao.UserDAO;
+import org.maxur.wmodel.dao.UserFactoryImpl;
+import org.maxur.wmodel.dao.UserRepositoryImpl;
 import org.maxur.wmodel.domain.GroupRepository;
 import org.maxur.wmodel.domain.UnitOfWorkFactory;
 import org.maxur.wmodel.domain.UserFactory;
@@ -32,9 +36,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.SQLException;
-import java.util.UUID;
-
-import static java.util.Arrays.asList;
 
 /**
  * @author myunusov
@@ -64,16 +65,15 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
                 RunScript.execute(h.getConnection(), reader);
             }
 
-            final String id1 = UUID.randomUUID().toString();
-            final String id2 = UUID.randomUUID().toString();
+            final String id1 = "group1";
+            final String id2 = "group2";
             h.insert("INSERT INTO t_group (group_id, name) VALUES (?, ?)", id1, "developers");
             h.insert("INSERT INTO t_group (group_id, name) VALUES (?, ?)", id2, "managers");
 
-            asList("Ivanov", "Petrov", "Sidorov")
-                    .stream()
-                    .forEach(name -> h.insert("INSERT INTO t_user (user_id, name, group_id) VALUES (?, ?, ?)",
-                            UUID.randomUUID().toString(), name, id1));
 
+            h.insert("INSERT INTO t_user (user_id, name, group_id) VALUES (?, ?, ?)", "user1", "Ivanov", id1);
+            h.insert("INSERT INTO t_user (user_id, name, group_id) VALUES (?, ?, ?)", "user2", "Petrov", id1);
+            h.insert("INSERT INTO t_user (user_id, name, group_id) VALUES (?, ?, ?)", "user3", "Sidorov", id2);
         }
 
         final UnitOfWorkFactory unitOfWorkFactory = new UnitOfWorkFactory();

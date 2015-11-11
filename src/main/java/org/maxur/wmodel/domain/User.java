@@ -30,18 +30,18 @@ public class User extends Entity {
         return this.group;
     }
 
-    public void insertTo(GroupImpl group) throws ValidationException {
+    public void insertTo(Group group) throws ValidationException {
         assignToGroup(group);
     }
 
-    public void moveTo(GroupImpl group) throws ValidationException {
+    public void moveTo(Group group) throws ValidationException {
         if (Objects.equals(this.group, group)) {
             return;
         }
         assignToGroup(group);
     }
 
-    private void assignToGroup(GroupImpl group) throws ValidationException {
+    private void assignToGroup(Group group) throws ValidationException {
         if (group.isComplete()) {
             throw new ValidationException("More users than allowed in group");
         }
@@ -60,6 +60,10 @@ public class User extends Entity {
 
     public String getName() {
         return name;
+    }
+
+    public String getGroupId() {
+        return group.getId();
     }
 }
 

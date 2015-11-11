@@ -48,7 +48,7 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
     }
 
     private Group makeLazyGroup(UserDAO.UserDAODTO dto) {
-        final Lazy<GroupImpl> lazy = lazy(dto.groupId, groupRepository::find);
+        final Lazy<Group> lazy = lazy(dto.groupId, groupRepository::find);
         return (Group) proxy(Group.class, lazy);
     }
 
