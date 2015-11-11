@@ -1,10 +1,9 @@
 package org.maxur.wmodel.dao;
 
 import org.maxur.wmodel.domain.Group;
-import org.maxur.wmodel.domain.GroupRepository;
-import org.maxur.wmodel.service.UnitOfWorkFactory;
 import org.maxur.wmodel.domain.User;
-import org.maxur.wmodel.domain.UserRepository;
+import org.maxur.wmodel.service.GroupRepository;
+import org.maxur.wmodel.service.UserRepository;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -36,7 +35,7 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
     public User find(String userId) {
         final UserDAO.UserDAODTO dto = dao.find(userId);
         checkNotNull(dto, userId);
-        final User user = new User(dto.userId, dto.name, proxyGroup(dto), this);
+        final User user = new User(dto.userId, dto.name, proxyGroup(dto));
         unitOfWorkFactory.provide().change(user);
         return user;
     }
@@ -45,7 +44,7 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
     public List<User> findAll() {
         return dao.findAll()
                 .stream()
-                .map(dto -> new User(dto.userId, dto.name, proxyGroup(dto), this))
+                .map(dto -> new User(dto.userId, dto.name, proxyGroup(dto)))
                 .collect(toList());
     }
 
@@ -54,13 +53,4 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
         return (Group) proxy(Group.class, lazy);
     }
 
-    @Override
-    public void insert(User user) {
-        dao.insert(user);
-    }
-
-    @Override
-    public void amend(User user) {
-        dao.amend(user);
-    }
 }

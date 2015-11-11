@@ -18,10 +18,10 @@ import org.maxur.wmodel.dao.GroupRepositoryImpl;
 import org.maxur.wmodel.dao.UserDAO;
 import org.maxur.wmodel.dao.UserFactoryImpl;
 import org.maxur.wmodel.dao.UserRepositoryImpl;
-import org.maxur.wmodel.domain.GroupRepository;
-import org.maxur.wmodel.service.UnitOfWorkFactory;
+import org.maxur.wmodel.service.GroupRepository;
+import org.maxur.wmodel.dao.UnitOfWorkFactory;
 import org.maxur.wmodel.domain.UserFactory;
-import org.maxur.wmodel.domain.UserRepository;
+import org.maxur.wmodel.service.UserRepository;
 import org.maxur.wmodel.view.MyApplicationEventListener;
 import org.maxur.wmodel.view.MyRequestEventListener;
 import org.maxur.wmodel.view.RuntimeExceptionHandler;
@@ -76,7 +76,7 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
             h.insert("INSERT INTO t_user (user_id, name, group_id) VALUES (?, ?, ?)", "user3", "Sidorov", id2);
         }
 
-        final UnitOfWorkFactory unitOfWorkFactory = new UnitOfWorkFactory();
+        final UnitOfWorkFactory unitOfWorkFactory = new UnitOfWorkFactory(dbi);
 
         MyRequestEventListener.setUnitOfWorkFactory(unitOfWorkFactory);
 
@@ -87,7 +87,6 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
         env.jersey().register(new AbstractBinder() {
             @Override
             protected void configure() {
-
                 bind(env.lifecycle()).to(LifecycleEnvironment.class);
                 bind(dbi.onDemand(UserDAO.class)).to(UserDAO.class);
                 bind(dbi.onDemand(GroupDAO.class)).to(GroupDAO.class);

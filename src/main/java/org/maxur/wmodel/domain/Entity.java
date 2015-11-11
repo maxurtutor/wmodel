@@ -23,7 +23,4 @@ public abstract class Entity {
         return id;
     }
 
-    public abstract void insert();
-
-    public abstract void amend();
 }

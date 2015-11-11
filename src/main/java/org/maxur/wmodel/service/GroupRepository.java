@@ -1,4 +1,6 @@
-package org.maxur.wmodel.domain;
+package org.maxur.wmodel.service;
+
+import org.maxur.wmodel.domain.Group;
 
 /**
  * @author Maxim Yunusov

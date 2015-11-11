@@ -1,7 +1,7 @@
 package org.maxur.wmodel.dao;
 
 import org.maxur.wmodel.domain.Group;
-import org.maxur.wmodel.domain.GroupRepository;
+import org.maxur.wmodel.service.GroupRepository;
 
 import javax.inject.Inject;
 

@@ -10,20 +10,17 @@ import java.util.Objects;
 public class User extends Entity {
 
     private final String name;
-    private final UserRepository repository;
     private Group group;
 
-    public User(String id, String name, Group group, UserRepository repository) {
+    public User(String id, String name, Group group) {
         super(id);
         this.name = name;
         this.group = group;
-        this.repository = repository;
     }
 
-    public User(String name, Group group, UserRepository repository) {
+    public User(String name, Group group) {
         this.name = name;
         this.group = group;
-        this.repository = repository;
     }
 
     public Group getGroup() {
@@ -46,16 +43,6 @@ public class User extends Entity {
             throw new ValidationException("More users than allowed in group");
         }
         this.group = group;
-    }
-
-    @Override
-    public void insert() {
-        repository.insert(this);
-    }
-
-    @Override
-    public void amend() {
-        repository.amend(this);
     }
 
     public String getName() {

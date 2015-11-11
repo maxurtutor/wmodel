@@ -29,14 +29,5 @@ public class Group extends Entity {
         return capacity == 5;
     }
 
-    @Override
-    public void insert() {
-        throw new UnsupportedOperationException("This operation is unsopperted yet");
-    }
-
-    @Override
-    public void amend() {
-        throw new UnsupportedOperationException("This operation is unsopperted yet");
-    }
 }
 

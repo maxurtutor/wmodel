@@ -1,4 +1,6 @@
-package org.maxur.wmodel.domain;
+package org.maxur.wmodel.service;
+
+import org.maxur.wmodel.domain.User;
 
 import java.util.List;
 
@@ -13,7 +15,4 @@ public interface UserRepository {
 
     List<User> findAll();
 
-    void insert(User user);
-
-    void amend(User user);
 }
