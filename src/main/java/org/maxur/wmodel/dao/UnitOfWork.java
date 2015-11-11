@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * @author myunusov
@@ -32,8 +33,10 @@ public class UnitOfWork {
     }
 
     public void commit() {
-        created.forEach(e -> getDAOFor(e).insert(e));
-        changed.forEach(e -> getDAOFor(e).amend(e));
+        created.stream()
+                .collect(groupingBy(e -> e.getClass()))
+                .forEach((c, l) -> getDAOFor(c).insertAll(l));
+        changed.forEach(e -> getDAOFor(e.getClass()).amend(e));
     }
 
     public void clear() {
@@ -41,8 +44,8 @@ public class UnitOfWork {
         changed.clear();
     }
 
-    private DAO getDAOFor(Entity entity) {
-        Class<? extends Entity> clazz = entity.getClass();
+    private DAO getDAOFor(Class<? extends Entity> aClass) {
+        Class<? extends Entity> clazz = aClass;
         final String className = format("%s.%sDAO", this.getClass().getPackage().getName(), clazz.getSimpleName());
         final Class<? extends DAO> dao;
         try {

@@ -2,10 +2,7 @@ package org.maxur.wmodel.dao;
 
 import org.maxur.wmodel.domain.Entity;
 import org.skife.jdbi.v2.StatementContext;
-import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.BindBean;
-import org.skife.jdbi.v2.sqlobject.SqlQuery;
-import org.skife.jdbi.v2.sqlobject.SqlUpdate;
+import org.skife.jdbi.v2.sqlobject.*;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 
@@ -29,6 +26,9 @@ public interface UserDAO extends DAO {
 
     @SqlUpdate("INSERT INTO t_user (user_id, name, group_id) VALUES (:user.id, :user.name, :user.groupId)")
     void insert(@BindBean("user") Entity user);
+
+    @SqlBatch("INSERT INTO t_user (user_id, name, group_id) VALUES (:id, :name, :groupId)")
+    void insertAll(@BindBean List<Entity> users);
 
     @SqlUpdate("UPDATE t_user SET name = :user.name, group_id = :user.groupId WHERE user_id = :user.id")
     void amend(@BindBean("user") Entity user);

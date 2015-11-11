@@ -17,7 +17,9 @@ import java.sql.SQLException;
 @RegisterMapper(GroupDAO.GroupMapper.class)
 public interface GroupDAO extends DAO {
 
-    @SqlQuery("SELECT  g.group_id, g.name, count(*) AS capacity FROM t_group g JOIN t_user WHERE  g.group_id = :group_id GROUP BY g.group_id, g.name;  ")
+    @SqlQuery("SELECT  g.group_id, g.name, count(*) AS capacity \n" +
+            "FROM t_group g JOIN t_user u ON g.group_id = u.group_id  \n" +
+            "WHERE g.group_id = :group_id")
     GroupDAODTO find(@Bind("group_id") String groupId);
 
     class GroupMapper implements ResultSetMapper<GroupDAODTO> {
