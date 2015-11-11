@@ -1,4 +1,4 @@
-package org.maxur.wmodel.domain;
+package org.maxur.wmodel.service;
 
 import org.glassfish.hk2.api.Factory;
 
@@ -13,10 +13,10 @@ public class UnitOfWorkFactory implements Factory<UnitOfWork> {
 
     @Override
     public UnitOfWork provide() {
-        UnitOfWork result = this.unitOfWork.get();
+        UnitOfWork result = unitOfWork.get();
         if (result == null) {
             result = new UnitOfWork();
-            this.unitOfWork.set(result);
+            unitOfWork.set(result);
         }
         return result;
     }

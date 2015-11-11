@@ -1,7 +1,7 @@
 package org.maxur.wmodel.dao;
 
 import org.maxur.wmodel.domain.Group;
-import org.maxur.wmodel.domain.UnitOfWorkFactory;
+import org.maxur.wmodel.service.UnitOfWorkFactory;
 import org.maxur.wmodel.domain.User;
 import org.maxur.wmodel.domain.UserFactory;
 import org.maxur.wmodel.domain.UserRepository;

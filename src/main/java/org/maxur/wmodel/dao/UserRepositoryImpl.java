@@ -1,15 +1,17 @@
 package org.maxur.wmodel.dao;
 
-import org.maxur.wmodel.domain.*;
-import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.BindBean;
+import org.maxur.wmodel.domain.Group;
+import org.maxur.wmodel.domain.GroupRepository;
+import org.maxur.wmodel.service.UnitOfWorkFactory;
+import org.maxur.wmodel.domain.User;
+import org.maxur.wmodel.domain.UserRepository;
 
 import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.maxur.wmodel.dao.LazyInvocationHandler.proxy;
 import static org.maxur.wmodel.dao.Lazy.lazy;
+import static org.maxur.wmodel.dao.LazyInvocationHandler.proxy;
 
 
 /**
@@ -31,10 +33,10 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
     }
 
     @Override
-    public User find(@Bind("user_id") String userId) {
+    public User find(String userId) {
         final UserDAO.UserDAODTO dto = dao.find(userId);
         checkNotNull(dto, userId);
-        final User user = new User(dto.userId, dto.name, makeLazyGroup(dto), this);
+        final User user = new User(dto.userId, dto.name, proxyGroup(dto), this);
         unitOfWorkFactory.provide().change(user);
         return user;
     }
@@ -43,22 +45,22 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
     public List<User> findAll() {
         return dao.findAll()
                 .stream()
-                .map(dto -> new User(dto.userId, dto.name, makeLazyGroup(dto), this))
+                .map(dto -> new User(dto.userId, dto.name, proxyGroup(dto), this))
                 .collect(toList());
     }
 
-    private Group makeLazyGroup(UserDAO.UserDAODTO dto) {
+    private Group proxyGroup(UserDAO.UserDAODTO dto) {
         final Lazy<Group> lazy = lazy(dto.groupId, groupRepository::find);
         return (Group) proxy(Group.class, lazy);
     }
 
     @Override
-    public void insert(@BindBean("user") User user) {
+    public void insert(User user) {
         dao.insert(user);
     }
 
     @Override
-    public void amend(@BindBean("user") User user) {
+    public void amend(User user) {
         dao.amend(user);
     }
 }

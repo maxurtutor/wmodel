@@ -19,7 +19,7 @@ import org.maxur.wmodel.dao.UserDAO;
 import org.maxur.wmodel.dao.UserFactoryImpl;
 import org.maxur.wmodel.dao.UserRepositoryImpl;
 import org.maxur.wmodel.domain.GroupRepository;
-import org.maxur.wmodel.domain.UnitOfWorkFactory;
+import org.maxur.wmodel.service.UnitOfWorkFactory;
 import org.maxur.wmodel.domain.UserFactory;
 import org.maxur.wmodel.domain.UserRepository;
 import org.maxur.wmodel.view.MyApplicationEventListener;

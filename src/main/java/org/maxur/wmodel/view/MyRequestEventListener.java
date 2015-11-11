@@ -2,7 +2,7 @@ package org.maxur.wmodel.view;
 
 import org.glassfish.jersey.server.monitoring.RequestEvent;
 import org.glassfish.jersey.server.monitoring.RequestEventListener;
-import org.maxur.wmodel.domain.UnitOfWorkFactory;
+import org.maxur.wmodel.service.UnitOfWorkFactory;
 
 /**
  * @author myunusov

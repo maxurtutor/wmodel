@@ -1,4 +1,6 @@
-package org.maxur.wmodel.domain;
+package org.maxur.wmodel.service;
+
+import org.maxur.wmodel.domain.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
