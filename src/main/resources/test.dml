@@ -1,0 +1,8 @@
+INSERT INTO t_group (name) VALUES ('Dev');
+INSERT INTO t_group (name) VALUES ('Ops');
+
+INSERT INTO t_user (name, group_id) VALUES ('Ivanov', 1);
+INSERT INTO t_user (name, group_id) VALUES ('Petrov', 1);
+INSERT INTO t_user (name, group_id) VALUES ('Sidorov', 2);
+
+

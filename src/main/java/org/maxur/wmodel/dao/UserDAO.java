@@ -21,9 +21,9 @@ import java.util.List;
 @RegisterMapper(UserDAO.UserMapper.class)
 public interface UserDAO {
 
-    @SqlUpdate("INSERT INTO t_user (name) VALUES (:name)")
+    @SqlUpdate("INSERT INTO t_user (name, group_id) VALUES (:name, :group_id)")
     @GetGeneratedKeys
-    int insert(@Bind("name") String name);
+    int insert(@Bind("name") String name, @Bind("group_id") int groupId);
 
     @SqlQuery("SELECT * FROM t_user WHERE user_id = :id")
     User findById(@Bind("id") int id);
@@ -31,9 +31,12 @@ public interface UserDAO {
     @SqlQuery("SELECT * FROM t_user")
     List<User> findAll();
 
+    @SqlQuery("SELECT count(*) FROM t_user WHERE group_id = :group_id")
+    Integer findCountUsersByGroup(@Bind("group_id") int groupId);
+
     class UserMapper implements ResultSetMapper<User> {
         public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-            return new User(r.getInt("user_id"), r.getString("name"));
+            return new User(r.getInt("user_id"), r.getString("name"), r.getInt("group_id"));
         }
     }
 }

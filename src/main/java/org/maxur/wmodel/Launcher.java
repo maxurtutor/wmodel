@@ -23,8 +23,6 @@ import java.io.Reader;
 import java.net.URL;
 import java.sql.SQLException;
 
-import static java.util.Arrays.stream;
-
 /**
  * @author myunusov
  * @version 1.0
@@ -55,15 +53,17 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
 
     private void initDB(DBI dbi) throws IOException, SQLException {
         try (Handle h = dbi.open()) {
-            try (
-                    InputStream is = getClass().getResourceAsStream("/db.ddl");
-                    Reader reader = new InputStreamReader(is)
-            ) {
-                RunScript.execute(h.getConnection(), reader);
-            }
-            String[] names = {"Ivanov", "Petrov", "Sidorov"};
-            stream(names)
-                    .forEach(name -> h.insert("INSERT INTO t_user (name) VALUES (?)", name));
+            runScript(h, "/db.ddl");
+            runScript(h, "/test.dml");
+        }
+    }
+
+    private void runScript(Handle h, String script) throws IOException, SQLException {
+        try (
+                InputStream is = getClass().getResourceAsStream(script);
+                Reader reader = new InputStreamReader(is)
+        ) {
+            RunScript.execute(h.getConnection(), reader);
         }
     }
 
