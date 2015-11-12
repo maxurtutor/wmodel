@@ -9,7 +9,6 @@
 
     <properties>
         <dropwizard.version>0.9.1</dropwizard.version>
-        <h2.version>1.4.190</h2.version>
     </properties>
 
     <parent>
@@ -32,7 +31,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
+            <version>1.4.190</version>
         </dependency>
     </dependencies>
 
