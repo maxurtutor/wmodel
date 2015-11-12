@@ -13,3 +13,5 @@ install:
   - mvn clean install
 script:
   - mvn test
+after_success:
+  - mvn coveralls:report
