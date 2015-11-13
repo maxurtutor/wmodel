@@ -1,10 +1,8 @@
 package org.maxur.wmodel.view;
 
 import com.codahale.metrics.annotation.Timed;
-import org.maxur.wmodel.dao.GroupDAO;
-import org.maxur.wmodel.dao.UserDAO;
 import org.maxur.wmodel.domain.User;
-import org.skife.jdbi.v2.DBI;
+import org.maxur.wmodel.service.UserService;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -25,50 +23,38 @@ import static javax.ws.rs.core.Response.status;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private final DBI dbi;
+    private final UserService service;
 
-    public UserResource(DBI dbi) {
-        this.dbi = dbi;
+    public UserResource(final UserService service) {
+        this.service = service;
     }
 
     @Timed
     @POST
     @Path("/user")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response add(User user) {
-        final Integer count = userDAO().findCountUsersByGroup(user.groupId);
-        if (count == 5) {
-            return status(BAD_REQUEST)
-                    .entity("More users than allowed in group")
+        try {
+            return ok(service.insert(user)).build();
+        } catch (RuntimeException e) {
+            return status(BAD_REQUEST).entity(e.getMessage())
                     .type("text/plain")
                     .build();
         }
-        return ok(find(userDAO().insert(user.name, user.groupId)))
-                .build();
     }
 
     @Timed
     @GET
     @Path("/user/{id}")
     public User find(@PathParam("id") Integer userId) {
-        final User user = userDAO().findById(userId);
-        user.groupName = groupDAO().findById(user.groupId).name;
-        return user;
+        return service.find(userId);
     }
 
     @Timed
     @GET
     @Path("/users")
     public List<User> all() {
-        final List<User> users = userDAO().findAll();
-        users.stream().forEach(u -> u.groupName = groupDAO().findById(u.groupId).name);
-        return users;
+        return service.findAll();
     }
 
-    private UserDAO userDAO() {
-        return dbi.onDemand(UserDAO.class);
-    }
-
-    private GroupDAO groupDAO() {
-        return dbi.onDemand(GroupDAO.class);
-    }
 }

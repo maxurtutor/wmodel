@@ -10,6 +10,7 @@ import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.h2.tools.RunScript;
+import org.maxur.wmodel.service.UserService;
 import org.maxur.wmodel.view.UserResource;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
@@ -48,7 +49,8 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
         DBI dbi = new DBIFactory().build(env, cfg.getDataSourceFactory(), "db");
         JmxReporter.forRegistry(env.metrics()).build().start();
         initDB(dbi);
-        env.jersey().register(new UserResource(dbi));
+        final UserService service = new UserService(dbi);
+        env.jersey().register(new UserResource(service));
     }
 
     private void initDB(DBI dbi) throws IOException, SQLException {
