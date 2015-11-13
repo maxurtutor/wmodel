@@ -15,7 +15,7 @@ import java.util.List;
  * @version 1.0
  * @since <pre>12.11.2015</pre>
  */ // The actual service
-@Path("/api")
+@Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 

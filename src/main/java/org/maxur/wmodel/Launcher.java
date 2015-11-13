@@ -4,6 +4,7 @@ import com.codahale.metrics.JmxReporter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Application;
 import io.dropwizard.Configuration;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.UrlConfigurationSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
@@ -45,6 +46,7 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
     @Override
     public void initialize(Bootstrap<AppConfiguration> bootstrap) {
         bootstrap.setConfigurationSourceProvider(new UrlConfigurationSourceProvider());
+        bootstrap.addBundle(new AssetsBundle("/assets", "/", "index.html"));
     }
 
     @Override
