@@ -13,6 +13,8 @@ import static org.junit.Assert.assertEquals;
 
 public class UserServiceTest {
 
+    public static final User FAKE_USER = new User(1, "Name", 2);
+
     @Tested(fullyInitialized = true)
     UserService service;
 
@@ -20,77 +22,29 @@ public class UserServiceTest {
     DBI dbi;
 
     @Test
-    public void testInsert(@Mocked final UserDAO userDAO, @Mocked final GroupDAO groupDAO) throws Exception {
-        final User user = new User();
-        user.name = "Name";
-        user.groupId = 2;
-        new Expectations() {{
-            dbi.onDemand(UserDAO.class);
-            result = userDAO;
-            dbi.onDemand(GroupDAO.class);
-            result = groupDAO;
-            userDAO.insert("Name", 2);
-            result = 1;
-            userDAO.findById(1);
-            result = user;
-        }};
-        final User result = service.insert(user);
-        assertEquals("Name", result.name);
-        assertEquals(2, result.groupId);
-        new Verifications() {{
-            userDAO.insert("Name", 2);
-            times = 1;
-        }};
-    }
-
-    @Test(expected = ValidationException.class)
-    public void testInsertWithOverflow(@Mocked final UserDAO userDAO) throws Exception {
-        final User user = new User();
-        user.name = "Name";
-        user.groupId = 2;
-        new Expectations() {{
-            dbi.onDemand(UserDAO.class);
-            result = userDAO;
-            userDAO.findCountUsersByGroup(2);
-            result = 5;
-        }};
-        service.insert(user);
-    }
-
-    @Test
     public void testFind(@Mocked final UserDAO userDAO, @Mocked final GroupDAO groupDAO) throws Exception {
-        final User user = new User();
-        user.name = "Name";
-        user.groupId = 2;
         new Expectations() {{
             dbi.onDemand(UserDAO.class);
             result = userDAO;
-            dbi.onDemand(GroupDAO.class);
-            result = groupDAO;
             userDAO.findById(1);
-            result = user;
+            result = FAKE_USER;
         }};
         final User result = service.find(1);
-        assertEquals("Name", result.name);
-        assertEquals(2, result.groupId);
+        assertEquals("Name", result.getName());
+        assertEquals(2, result.getGroupId());
     }
 
     @Test
     public void testFindAll(@Mocked final UserDAO userDAO, @Mocked final GroupDAO groupDAO) throws Exception {
-        final User user = new User();
-        user.name = "Name";
-        user.groupId = 2;
         new Expectations() {{
             dbi.onDemand(UserDAO.class);
             result = userDAO;
-            dbi.onDemand(GroupDAO.class);
-            result = groupDAO;
             userDAO.findAll();
-            result = new User[]{user};
+            result = new User[]{FAKE_USER};
         }};
         final List<User> result = service.findAll();
         assertEquals(1, result.size());
-        assertEquals(user, result.get(0));
+        assertEquals(FAKE_USER, result.get(0));
     }
 
 }
