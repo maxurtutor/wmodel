@@ -1,7 +1,5 @@
 package org.maxur.wmodel.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * @author Maxim Yunusov
  * @version 1.0
@@ -10,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @SuppressWarnings("unused")
 public abstract class Entity {
 
-    @JsonProperty
-    protected int id;
+    // XXX final
+    private int id;
 
     public Entity() {
     }
@@ -24,4 +22,7 @@ public abstract class Entity {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
 }

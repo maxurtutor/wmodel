@@ -5,11 +5,15 @@ import org.maxur.wmodel.domain.ServiceLocatorProvider;
 import org.maxur.wmodel.domain.User;
 import org.maxur.wmodel.domain.UserRepository;
 import org.maxur.wmodel.domain.ValidationException;
+import org.maxur.wmodel.view.dto.UserDTO;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+import static org.maxur.wmodel.view.dto.UserDTO.dto;
 
 
 /**
@@ -35,22 +39,27 @@ public class UserResource {
     @POST
     @Path("/user")
     @Consumes(MediaType.APPLICATION_JSON)
-    public User add(User user) throws ValidationException {
-        return user.insert();
+    public UserDTO add(UserDTO dto) throws ValidationException {
+        final User user = dto.assemble();
+        return dto(user.insert());
     }
 
     @Timed
     @GET
     @Path("/user/{id}")
-    public User find(@PathParam("id") Integer userId) throws ValidationException {
-        return repository.find(userId);
+    public UserDTO find(@PathParam("id") Integer userId) throws ValidationException {
+        return dto(repository.find(userId));
     }
 
     @Timed
     @GET
     @Path("/users")
-    public List<User> all() {
-        return repository.findAll();
+    public List<UserDTO> all() {
+        return repository
+                .findAll()
+                .stream()
+                .map(UserDTO::dto)
+                .collect(toList());
     }
 
 }

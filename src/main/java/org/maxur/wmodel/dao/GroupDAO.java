@@ -25,7 +25,7 @@ public interface GroupDAO {
 
         @Override
         public Group map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-            return new Group(r.getInt("group_id"), r.getString("name"));
+            return Group.make(r.getInt("group_id"), r.getString("name"));
         }
 
     }

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class UserRepositoryImplTest {
 
-    public static final User FAKE_USER = new User(1, "Name", 2);
+    public static final User FAKE_USER = User.make(1, "Name", 2);
 
     @Tested
     UserRepositoryImpl repository;

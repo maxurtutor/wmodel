@@ -1,7 +1,5 @@
 package org.maxur.wmodel.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
 
 /**
@@ -9,24 +7,22 @@ import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
  * @version 1.0
  * @since <pre>04.11.2015</pre>
  */
-@SuppressWarnings("unused")
 public class User extends Entity {
 
-    @JsonProperty
     private String name;
 
-    @JsonProperty
     private int groupId;
 
-    private String groupName;
+    private Group group;
 
-    public User() {
-    }
-
-    public User(int id, String name, int groupId) {
+    private User(int id, String name, int groupId) {
         super(id);
         this.name = name;
         this.groupId = groupId;
+    }
+
+    public static User make(int id, String name, int groupId) {
+        return new User(id, name, groupId);
     }
 
     public String getName() {
@@ -41,17 +37,11 @@ public class User extends Entity {
         return groupId;
     }
 
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
-    }
-
-    @JsonProperty
-    public String getGroupName() throws NotFoundException {
-        if (groupName == null) {
-            GroupRepository repository = service(GroupRepository.class);
-            groupName = repository.find(groupId).getName();
+    public Group getGroup() throws NotFoundException {
+        if (group == null) {
+            group = service(GroupRepository.class).find(groupId);
         }
-        return groupName;
+        return group;
     }
 
     public User insert() throws ValidationException {
@@ -60,7 +50,8 @@ public class User extends Entity {
         if (count == 5) {
             throw new ValidationException("More users than allowed in group");
         }
-        this.id = repository.insert(this);
+        // XXX
+        this.setId(repository.insert(this));
         return this;
     }
 }

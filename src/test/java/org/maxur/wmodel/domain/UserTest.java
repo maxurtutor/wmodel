@@ -11,8 +11,8 @@ import static org.junit.Assert.assertEquals;
 
 public class UserTest  {
 
-    public static final User FAKE_USER = new User(1, "Name", 2);
-    public static final Group FAKE_GROUP = new Group(2, "Testers");
+    public static final User FAKE_USER = User.make(1, "Name", 2);
+    public static final Group FAKE_GROUP = Group.make(2, "Testers");
 
     @Before
     public void setUp() throws Exception {
@@ -66,8 +66,8 @@ public class UserTest  {
             groupRepository.find(2);
             result = FAKE_GROUP;
         }};
-        String result = FAKE_USER.getGroupName();
-        assertEquals("Testers", result);
+        Group result = FAKE_USER.getGroup();
+        assertEquals("Testers", result.getName());
     }
 
 
