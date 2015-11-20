@@ -7,11 +7,14 @@ import io.dropwizard.Configuration;
 import io.dropwizard.configuration.UrlConfigurationSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
+import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.h2.tools.RunScript;
 import org.maxur.wmodel.service.UserService;
+import org.maxur.wmodel.view.RuntimeExceptionHandler;
 import org.maxur.wmodel.view.UserResource;
+import org.maxur.wmodel.view.ValidationExceptionHandler;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 
@@ -49,8 +52,14 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
         DBI dbi = new DBIFactory().build(env, cfg.getDataSourceFactory(), "db");
         JmxReporter.forRegistry(env.metrics()).build().start();
         initDB(dbi);
-        final UserService service = new UserService(dbi);
-        env.jersey().register(new UserResource(service));
+        UserService service = new UserService(dbi);
+        initRest(service, env.jersey());
+    }
+
+    private void initRest(UserService service, JerseyEnvironment jersey) {
+        jersey.register(RuntimeExceptionHandler.class);
+        jersey.register(ValidationExceptionHandler.class);
+        jersey.register(new UserResource(service));
     }
 
     private void initDB(DBI dbi) throws IOException, SQLException {

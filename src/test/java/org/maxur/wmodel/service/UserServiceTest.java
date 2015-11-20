@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.maxur.wmodel.dao.GroupDAO;
 import org.maxur.wmodel.dao.UserDAO;
 import org.maxur.wmodel.domain.User;
-import org.skife.jdbi.v2.IDBI;
+import org.skife.jdbi.v2.DBI;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class UserServiceTest {
     UserService service;
 
     @Injectable
-    IDBI dbi;
+    DBI dbi;
 
     @Test
     public void testInsert(@Mocked final UserDAO userDAO, @Mocked final GroupDAO groupDAO) throws Exception {
@@ -43,7 +43,7 @@ public class UserServiceTest {
         }};
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = ValidationException.class)
     public void testInsertWithOverflow(@Mocked final UserDAO userDAO) throws Exception {
         final User user = new User();
         user.name = "Name";
