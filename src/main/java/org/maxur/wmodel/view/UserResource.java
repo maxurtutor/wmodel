@@ -1,10 +1,7 @@
 package org.maxur.wmodel.view;
 
 import com.codahale.metrics.annotation.Timed;
-import org.maxur.wmodel.domain.ServiceLocatorProvider;
-import org.maxur.wmodel.domain.User;
-import org.maxur.wmodel.domain.UserRepository;
-import org.maxur.wmodel.domain.ValidationException;
+import org.maxur.wmodel.domain.*;
 import org.maxur.wmodel.view.dto.UserRequestDTO;
 import org.maxur.wmodel.view.dto.UserResponseDTO;
 
@@ -26,14 +23,17 @@ import static org.maxur.wmodel.view.dto.UserResponseDTO.dto;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
 
+    // XXX
     @Inject
     private ServiceLocatorProvider instance;
 
     @Inject
-    public UserResource(final UserRepository repository) {
-        this.repository = repository;
+    public UserResource(UserRepository userRepository, GroupRepository groupRepository) {
+        this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
     }
 
     @Timed
@@ -41,22 +41,24 @@ public class UserResource {
     @Path("/user")
     @Consumes(MediaType.APPLICATION_JSON)
     public UserResponseDTO add(UserRequestDTO dto) throws ValidationException {
-        final User user = dto.assemble();
-        return dto(user.insert());
+        Group group = groupRepository.find(dto.groupId);
+        User user = User.makeNew(dto.name);
+        group.addUser(user);
+        return dto(user);
     }
 
     @Timed
     @GET
     @Path("/user/{id}")
     public UserResponseDTO find(@PathParam("id") String userId) throws ValidationException {
-        return dto(repository.find(userId));
+        return dto(userRepository.find(userId));
     }
 
     @Timed
     @GET
     @Path("/users")
     public List<UserResponseDTO> all() {
-        return repository
+        return userRepository
                 .findAll()
                 .stream()
                 .map(UserResponseDTO::dto)

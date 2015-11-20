@@ -1,7 +1,6 @@
 package org.maxur.wmodel.view.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.maxur.wmodel.domain.User;
 
 /**
  * @author myunusov
@@ -17,13 +16,7 @@ public class UserRequestDTO {
     @JsonProperty
     public String groupId;
 
-    @JsonProperty
-    public String groupName;
-
     public UserRequestDTO() {
     }
 
-    public User assemble() {
-        return User.make(name, groupId);
-    }
 }

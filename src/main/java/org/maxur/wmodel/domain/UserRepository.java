@@ -18,6 +18,4 @@ public abstract class UserRepository extends Repository<User> {
 
     public abstract void insert(User user);
 
-    public abstract Integer findCountUsersByGroup(String groupId);
-
 }

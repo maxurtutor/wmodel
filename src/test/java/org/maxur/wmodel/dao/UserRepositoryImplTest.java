@@ -38,7 +38,6 @@ public class UserRepositoryImplTest {
         }};
         final User result = repository.find("u1");
         assertEquals("Name", result.getName());
-        assertEquals("g2", result.getGroupId());
     }
 
     @Test(expected = NotFoundException.class)
@@ -75,15 +74,4 @@ public class UserRepositoryImplTest {
         repository.insert(FAKE_USER);
     }
 
-    @Test
-    public void testFindCountUsersByGroup(@Mocked UserDAO userDAO) throws Exception {
-        new Expectations() {{
-            dbi.onDemand(UserDAO.class);
-            result = userDAO;
-            userDAO.findCountUsersByGroup("g2");
-            result = 5;
-        }};
-        final Integer result = repository.findCountUsersByGroup("g2");
-        assertEquals(new Integer(5), result);
-    }
 }

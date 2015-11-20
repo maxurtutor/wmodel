@@ -9,9 +9,9 @@ import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
  */
 public class User extends Entity {
 
-    private String name;
+    private final String name;
 
-    private String groupId;
+    private final String groupId;
 
     private Group group;
 
@@ -21,45 +21,41 @@ public class User extends Entity {
         this.groupId = groupId;
     }
 
-    public User(String name, String groupId) {
+    private User(String name) {
         this.name = name;
-        this.groupId = groupId;
+        this.groupId = null;
     }
 
     public static User make(String id, String name, String groupId) {
         return new User(id, name, groupId);
     }
 
-    public static User make(String name, String groupId) {
-        return new User(name, groupId);
+    public static User makeNew(String name) {
+        return new User(name);
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getGroupId() {
-        return groupId;
-    }
-
     public Group getGroup() throws NotFoundException {
         if (group == null) {
+            if (groupId == null) {
+                return null;
+            }
             group = service(GroupRepository.class).find(groupId);
         }
         return group;
     }
 
-    public User insert() throws ValidationException {
-        final UserRepository repository = service(UserRepository.class);
-        final Integer count = repository.findCountUsersByGroup(this.groupId);
-        if (count == 5) {
-            throw new ValidationException("More users than allowed in group");
+    void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public String getGroupId() {
+        if (group != null) {
+            return group.getId();
         }
-        repository.insert(this);
-        return this;
+        return groupId;
     }
 }

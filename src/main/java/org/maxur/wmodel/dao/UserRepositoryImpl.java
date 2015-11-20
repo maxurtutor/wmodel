@@ -36,8 +36,4 @@ public class UserRepositoryImpl extends UserRepository {
         dbi.onDemand(UserDAO.class).insert(user);
     }
 
-    @Override
-    public Integer findCountUsersByGroup(String groupId) {
-        return dbi.onDemand(UserDAO.class).findCountUsersByGroup(groupId);
-    }
 }

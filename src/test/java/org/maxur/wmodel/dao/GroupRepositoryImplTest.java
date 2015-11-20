@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class GroupRepositoryImplTest {
 
-    public static final Group FAKE_GROUP = Group.make("g2", "Testers");
+    public static final Group FAKE_GROUP = Group.make("g2", "Testers", 4);
 
     @Tested
     GroupRepositoryImpl repository;

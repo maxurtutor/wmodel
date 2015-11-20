@@ -30,9 +30,6 @@ public interface UserDAO {
     @SqlQuery("SELECT * FROM t_user")
     List<User> findAll();
 
-    @SqlQuery("SELECT count(*) FROM t_user WHERE group_id = :groupId")
-    Integer findCountUsersByGroup(@Bind("groupId") String groupId);
-
     class UserMapper implements ResultSetMapper<User> {
         public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {
             return User.make(r.getString("user_id"), r.getString("name"), r.getString("group_id"));

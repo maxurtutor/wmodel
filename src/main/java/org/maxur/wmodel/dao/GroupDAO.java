@@ -18,14 +18,16 @@ import java.sql.SQLException;
 @RegisterMapper(GroupDAO.GroupMapper.class)
 public interface GroupDAO {
 
-    @SqlQuery("SELECT * FROM t_group WHERE group_id = :group_id")
+    @SqlQuery("SELECT  g.group_id, g.name, count(*) AS user_number \n" +
+        "FROM t_group g JOIN t_user u ON g.group_id = u.group_id  \n" +
+        "GROUP BY g.group_id, g.name\n" +
+        "HAVING g.group_id = :group_id\n")
     Group find(@Bind("group_id") String groupId);
 
     class GroupMapper implements ResultSetMapper<Group> {
-
         @Override
         public Group map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-            return Group.make(r.getString("group_id"), r.getString("name"));
+            return Group.make(r.getString("group_id"), r.getString("name"), r.getInt("user_number"));
         }
 
     }
