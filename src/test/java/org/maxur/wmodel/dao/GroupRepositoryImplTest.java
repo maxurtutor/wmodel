@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class GroupRepositoryImplTest {
 
-    public static final Group FAKE_GROUP = Group.make(2, "Testers");
+    public static final Group FAKE_GROUP = Group.make("g2", "Testers");
 
     @Tested
     GroupRepositoryImpl repository;
@@ -31,12 +31,12 @@ public class GroupRepositoryImplTest {
         new Expectations() {{
             dbi.onDemand(GroupDAO.class);
             result = groupDAO;
-            groupDAO.find(2);
+            groupDAO.find("g2");
             result = FAKE_GROUP;
         }};
-        final Group result = repository.find(2);
+        final Group result = repository.find("g2");
         assertEquals("Testers", result.getName());
-        assertEquals(2, result.getId());
+        assertEquals("g2", result.getId());
     }
 
     @Test(expected = NotFoundException.class)
@@ -44,10 +44,10 @@ public class GroupRepositoryImplTest {
         new Expectations() {{
             dbi.onDemand(GroupDAO.class);
             result = groupDAO;
-            groupDAO.find(2);
+            groupDAO.find("g2");
             result = null;
         }};
-        repository.find(2);
+        repository.find("g2");
     }
 
 

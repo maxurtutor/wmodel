@@ -11,18 +11,27 @@ public class User extends Entity {
 
     private String name;
 
-    private int groupId;
+    private String groupId;
 
     private Group group;
 
-    private User(int id, String name, int groupId) {
+    private User(String id, String name, String groupId) {
         super(id);
         this.name = name;
         this.groupId = groupId;
     }
 
-    public static User make(int id, String name, int groupId) {
+    public User(String name, String groupId) {
+        this.name = name;
+        this.groupId = groupId;
+    }
+
+    public static User make(String id, String name, String groupId) {
         return new User(id, name, groupId);
+    }
+
+    public static User make(String name, String groupId) {
+        return new User(name, groupId);
     }
 
     public String getName() {
@@ -33,7 +42,7 @@ public class User extends Entity {
         this.name = name;
     }
 
-    public int getGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
@@ -50,8 +59,7 @@ public class User extends Entity {
         if (count == 5) {
             throw new ValidationException("More users than allowed in group");
         }
-        // XXX
-        this.setId(repository.insert(this));
+        repository.insert(this);
         return this;
     }
 }

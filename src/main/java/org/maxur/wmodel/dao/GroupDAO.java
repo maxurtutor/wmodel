@@ -19,13 +19,13 @@ import java.sql.SQLException;
 public interface GroupDAO {
 
     @SqlQuery("SELECT * FROM t_group WHERE group_id = :group_id")
-    Group find(@Bind("group_id") Integer groupId);
+    Group find(@Bind("group_id") String groupId);
 
     class GroupMapper implements ResultSetMapper<Group> {
 
         @Override
         public Group map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-            return Group.make(r.getInt("group_id"), r.getString("name"));
+            return Group.make(r.getString("group_id"), r.getString("name"));
         }
 
     }

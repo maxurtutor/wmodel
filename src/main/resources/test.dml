@@ -1,8 +1,8 @@
-INSERT INTO t_group (name) VALUES ('Dev');
-INSERT INTO t_group (name) VALUES ('Ops');
+INSERT INTO t_group (group_id, name) VALUES ('g1', 'Dev');
+INSERT INTO t_group (group_id, name) VALUES ('g2', 'Ops');
 
-INSERT INTO t_user (name, group_id) VALUES ('Ivanov', 1);
-INSERT INTO t_user (name, group_id) VALUES ('Petrov', 1);
-INSERT INTO t_user (name, group_id) VALUES ('Sidorov', 2);
+INSERT INTO t_user (user_id, name, group_id) VALUES ('u1', 'Ivanov',  'g1');
+INSERT INTO t_user (user_id, name, group_id) VALUES ('u2', 'Petrov',  'g1');
+INSERT INTO t_user (user_id, name, group_id) VALUES ('u3', 'Sidorov', 'g2');
 
 

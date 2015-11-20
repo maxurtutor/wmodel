@@ -9,12 +9,12 @@ public class Group extends Entity {
 
     private String name;
 
-    private Group(int id, String name) {
+    private Group(String id, String name) {
         super(id);
         this.name = name;
     }
 
-    public static Group make(int id, String name) {
+    public static Group make(String id, String name) {
         return new Group(id, name);
     }
 

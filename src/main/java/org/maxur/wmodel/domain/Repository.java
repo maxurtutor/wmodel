@@ -7,7 +7,7 @@ package org.maxur.wmodel.domain;
  */
 public abstract class Repository<T extends Entity> {
 
-    public T find(int id) throws NotFoundException {
+    public T find(String id) throws NotFoundException {
         T result = findById(id);
         if (result == null) {
             throw new NotFoundException(getTypeName(), id);
@@ -17,5 +17,5 @@ public abstract class Repository<T extends Entity> {
 
     protected abstract String getTypeName();
 
-    protected abstract T findById(int id);
+    protected abstract T findById(String id);
 }
