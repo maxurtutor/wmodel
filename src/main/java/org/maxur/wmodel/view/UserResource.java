@@ -5,6 +5,7 @@ import org.maxur.wmodel.domain.User;
 import org.maxur.wmodel.service.UserService;
 import org.maxur.wmodel.service.ValidationException;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -21,6 +22,7 @@ public class UserResource {
 
     private final UserService service;
 
+    @Inject
     public UserResource(final UserService service) {
         this.service = service;
     }

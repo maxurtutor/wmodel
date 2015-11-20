@@ -6,6 +6,7 @@ import org.maxur.wmodel.domain.User;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.IDBI;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ public class UserService {
 
     private final IDBI dbi;
 
+    @Inject
     public UserService(DBI dbi) {
         this.dbi = dbi;
     }

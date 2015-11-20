@@ -9,8 +9,10 @@ import io.dropwizard.configuration.UrlConfigurationSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
+import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.h2.tools.RunScript;
 import org.maxur.wmodel.service.UserService;
 import org.maxur.wmodel.view.RuntimeExceptionHandler;
@@ -19,6 +21,7 @@ import org.maxur.wmodel.view.ValidationExceptionHandler;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 
+import javax.inject.Singleton;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -51,17 +54,16 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
 
     @Override
     public void run(final AppConfiguration cfg, final Environment env) throws IOException, SQLException {
-        DBI dbi = new DBIFactory().build(env, cfg.getDataSourceFactory(), "db");
         JmxReporter.forRegistry(env.metrics()).build().start();
-        initDB(dbi);
-        UserService service = new UserService(dbi);
-        initRest(service, env.jersey());
+        DBI dbi = makeDBI(cfg, env);
+        AbstractBinder binder = makeBinder(env, dbi);
+        initRest(env.jersey(), binder);
     }
 
-    private void initRest(UserService service, JerseyEnvironment jersey) {
-        jersey.register(RuntimeExceptionHandler.class);
-        jersey.register(ValidationExceptionHandler.class);
-        jersey.register(new UserResource(service));
+    private DBI makeDBI(AppConfiguration cfg, Environment env) throws IOException, SQLException {
+        DBI dbi = new DBIFactory().build(env, cfg.getDataSourceFactory(), "db");
+        initDB(dbi);
+        return dbi;
     }
 
     private void initDB(DBI dbi) throws IOException, SQLException {
@@ -78,6 +80,24 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
         ) {
             RunScript.execute(h.getConnection(), reader);
         }
+    }
+
+    private AbstractBinder makeBinder(Environment env, DBI dbi) {
+        return new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(env.lifecycle()).to(LifecycleEnvironment.class);
+                bind(UserService.class).to(UserService.class).in(Singleton.class);
+                bind(dbi).to(DBI.class);
+            }
+        };
+    }
+
+    private void initRest(JerseyEnvironment jersey, AbstractBinder binder) {
+        jersey.packages(UserResource.class.getPackage().getName());
+        jersey.register(RuntimeExceptionHandler.class);
+        jersey.register(ValidationExceptionHandler.class);
+        jersey.register(binder);
     }
 
     public static class AppConfiguration extends Configuration {
