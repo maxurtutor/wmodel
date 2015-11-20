@@ -16,8 +16,8 @@ public abstract class UserRepository extends Repository<User> {
 
     public abstract List<User> findAll();
 
-    public abstract Integer insert(User user);
+    public abstract void insert(User user);
 
-    public abstract Integer findCountUsersByGroup(int groupId);
+    public abstract Integer findCountUsersByGroup(String groupId);
 
 }

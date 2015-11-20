@@ -11,8 +11,8 @@ import static org.junit.Assert.assertEquals;
 
 public class UserTest  {
 
-    public static final User FAKE_USER = User.make(1, "Name", 2);
-    public static final Group FAKE_GROUP = Group.make(2, "Testers");
+    public static final User FAKE_USER = User.make("u1", "Name", "g2");
+    public static final Group FAKE_GROUP = Group.make("g2", "Testers");
 
     @Before
     public void setUp() throws Exception {
@@ -27,12 +27,12 @@ public class UserTest  {
             new ServiceLocatorProvider(locator);
             locator.getService(UserRepository.class);
             result = userRepository;
-            userRepository.findCountUsersByGroup(2);
+            userRepository.findCountUsersByGroup("g2");
             result = 1;
         }};
         final User result = FAKE_USER.insert();
         assertEquals("Name", result.getName());
-        assertEquals(2, result.getGroupId());
+        assertEquals("g2", result.getGroupId());
         new Verifications() {{
             userRepository.insert(FAKE_USER);
             times = 1;
@@ -48,7 +48,7 @@ public class UserTest  {
             new ServiceLocatorProvider(locator);
             locator.getService(UserRepository.class);
             result = userRepository;
-            userRepository.findCountUsersByGroup(2);
+            userRepository.findCountUsersByGroup("g2");
             result = 5;
         }};
         FAKE_USER.insert();
@@ -63,7 +63,7 @@ public class UserTest  {
             new ServiceLocatorProvider(locator);
             locator.getService(GroupRepository.class);
             result = groupRepository;
-            groupRepository.find(2);
+            groupRepository.find("g2");
             result = FAKE_GROUP;
         }};
         Group result = FAKE_USER.getGroup();

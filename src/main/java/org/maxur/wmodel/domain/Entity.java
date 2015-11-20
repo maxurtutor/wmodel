@@ -1,5 +1,7 @@
 package org.maxur.wmodel.domain;
 
+import java.util.UUID;
+
 /**
  * @author Maxim Yunusov
  * @version 1.0
@@ -8,21 +10,18 @@ package org.maxur.wmodel.domain;
 @SuppressWarnings("unused")
 public abstract class Entity {
 
-    // XXX final
-    private int id;
+    private final String id;
 
     public Entity() {
+        this.id = UUID.randomUUID().toString();
     }
 
-    public Entity(int id) {
+    public Entity(String id) {
         this.id = id;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
 }

@@ -21,7 +21,7 @@ public class GroupRepositoryImpl extends GroupRepository {
     }
 
     @Override
-    public Group findById(int id) {
+    public Group findById(String id) {
         return dbi.onDemand(GroupDAO.class).find(id);
     }
 

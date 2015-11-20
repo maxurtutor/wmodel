@@ -22,7 +22,7 @@ public class UserRepositoryImpl extends UserRepository {
     }
 
     @Override
-    public User findById(int id) {
+    public User findById(String id) {
         return dbi.onDemand(UserDAO.class).find(id);
     }
 
@@ -32,12 +32,12 @@ public class UserRepositoryImpl extends UserRepository {
     }
 
     @Override
-    public Integer insert(User user) {
-        return dbi.onDemand(UserDAO.class).insert(user);
+    public void insert(User user) {
+        dbi.onDemand(UserDAO.class).insert(user);
     }
 
     @Override
-    public Integer findCountUsersByGroup(int groupId) {
+    public Integer findCountUsersByGroup(String groupId) {
         return dbi.onDemand(UserDAO.class).findCountUsersByGroup(groupId);
     }
 }

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class UserRepositoryImplTest {
 
-    public static final User FAKE_USER = User.make(1, "Name", 2);
+    public static final User FAKE_USER = User.make("u1", "Name", "g2");
 
     @Tested
     UserRepositoryImpl repository;
@@ -33,12 +33,12 @@ public class UserRepositoryImplTest {
         new Expectations() {{
             dbi.onDemand(UserDAO.class);
             result = userDAO;
-            userDAO.find(1);
+            userDAO.find("u1");
             result = FAKE_USER;
         }};
-        final User result = repository.find(1);
+        final User result = repository.find("u1");
         assertEquals("Name", result.getName());
-        assertEquals(2, result.getGroupId());
+        assertEquals("g2", result.getGroupId());
     }
 
     @Test(expected = NotFoundException.class)
@@ -46,10 +46,10 @@ public class UserRepositoryImplTest {
         new Expectations() {{
             dbi.onDemand(UserDAO.class);
             result = userDAO;
-            userDAO.find(1);
+            userDAO.find("u1");
             result = null;
         }};
-        repository.find(1);
+        repository.find("u1");
     }
 
     @Test
@@ -71,10 +71,8 @@ public class UserRepositoryImplTest {
             dbi.onDemand(UserDAO.class);
             result = userDAO;
             userDAO.insert(FAKE_USER);
-            result = 1;
         }};
-        final Integer result = repository.insert(FAKE_USER);
-        assertEquals(new Integer(1), result);
+        repository.insert(FAKE_USER);
     }
 
     @Test
@@ -82,10 +80,10 @@ public class UserRepositoryImplTest {
         new Expectations() {{
             dbi.onDemand(UserDAO.class);
             result = userDAO;
-            userDAO.findCountUsersByGroup(2);
+            userDAO.findCountUsersByGroup("g2");
             result = 5;
         }};
-        final Integer result = repository.findCountUsersByGroup(2);
+        final Integer result = repository.findCountUsersByGroup("g2");
         assertEquals(new Integer(5), result);
     }
 }
