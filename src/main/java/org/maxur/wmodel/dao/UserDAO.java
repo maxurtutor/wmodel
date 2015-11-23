@@ -1,6 +1,5 @@
 package org.maxur.wmodel.dao;
 
-import org.maxur.wmodel.domain.User;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;
@@ -22,17 +21,43 @@ import java.util.List;
 public interface UserDAO {
 
     @SqlUpdate("INSERT INTO t_user (user_id, name, group_id) VALUES (:id, :name, :groupId)")
-    void insert(@BindBean User user);
+    void insert(@BindBean UserDAODTO user);
 
     @SqlQuery("SELECT * FROM t_user WHERE user_id = :userId")
-    User find(@Bind("userId") String userId);
+    UserDAODTO find(@Bind("userId") String userId);
 
     @SqlQuery("SELECT * FROM t_user")
-    List<User> findAll();
+    List<UserDAODTO> findAll();
 
-    class UserMapper implements ResultSetMapper<User> {
-        public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-            return User.make(r.getString("user_id"), r.getString("name"), r.getString("group_id"));
+    class UserMapper implements ResultSetMapper<UserDAODTO> {
+        public UserDAODTO map(int index, ResultSet r, StatementContext ctx) throws SQLException {
+            return new UserDAODTO(r.getString("user_id"), r.getString("name"), r.getString("group_id"));
+        }
+    }
+
+    class UserDAODTO {
+
+        final String id;
+        final String name;
+        final String groupId;
+
+        public UserDAODTO(String id, String name, String groupId) {
+
+            this.id = id;
+            this.name = name;
+            this.groupId = groupId;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getGroupId() {
+            return groupId;
         }
     }
 }

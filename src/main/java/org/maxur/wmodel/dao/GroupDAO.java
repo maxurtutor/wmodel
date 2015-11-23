@@ -1,6 +1,5 @@
 package org.maxur.wmodel.dao;
 
-import org.maxur.wmodel.domain.Group;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -22,13 +21,25 @@ public interface GroupDAO {
         "FROM t_group g JOIN t_user u ON g.group_id = u.group_id  \n" +
         "GROUP BY g.group_id, g.name\n" +
         "HAVING g.group_id = :group_id\n")
-    Group find(@Bind("group_id") String groupId);
+    GroupDAODTO find(@Bind("group_id") String groupId);
 
-    class GroupMapper implements ResultSetMapper<Group> {
+    class GroupMapper implements ResultSetMapper<GroupDAODTO> {
         @Override
-        public Group map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-            return Group.make(r.getString("group_id"), r.getString("name"), r.getInt("user_number"));
+        public GroupDAODTO map(int index, ResultSet r, StatementContext ctx) throws SQLException {
+            return new GroupDAODTO(r.getString("group_id"), r.getString("name"), r.getInt("user_number"));
         }
+    }
 
+    class GroupDAODTO {
+
+        final String id;
+        final int userNumber;
+        final String name;
+
+        public GroupDAODTO(String id, String name, int userNumber) {
+            this.name = name;
+            this.id = id;
+            this.userNumber = userNumber;
+        }
     }
 }

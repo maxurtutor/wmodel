@@ -21,8 +21,12 @@ public class GroupRepositoryImpl extends GroupRepository {
     }
 
     @Override
-    public Group findById(String id) {
-        return dbi.onDemand(GroupDAO.class).find(id);
+    protected Group findById(String id) {
+        final GroupDAO.GroupDAODTO dto = dbi.onDemand(GroupDAO.class).find(id);
+        if (dto == null) {
+            return null;
+        }
+        return Group.make(dto.id, dto.name, dto.userNumber);
     }
 
 }

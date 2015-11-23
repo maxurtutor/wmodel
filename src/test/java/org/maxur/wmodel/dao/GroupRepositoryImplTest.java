@@ -6,10 +6,10 @@ import mockit.Mocked;
 import mockit.Tested;
 import org.junit.Test;
 import org.maxur.wmodel.domain.Group;
-import org.maxur.wmodel.domain.NotFoundException;
 import org.skife.jdbi.v2.DBI;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author myunusov
@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class GroupRepositoryImplTest {
 
-    public static final Group FAKE_GROUP = Group.make("g2", "Testers", 4);
 
     @Tested
     GroupRepositoryImpl repository;
@@ -32,22 +31,22 @@ public class GroupRepositoryImplTest {
             dbi.onDemand(GroupDAO.class);
             result = groupDAO;
             groupDAO.find("g2");
-            result = FAKE_GROUP;
+            result = new GroupDAO.GroupDAODTO("g2", "Testers", 4);
         }};
-        final Group result = repository.find("g2");
+        final Group result = repository.find("g2").get();
         assertEquals("Testers", result.getName());
         assertEquals("g2", result.getId());
     }
 
-    @Test(expected = NotFoundException.class)
-    public void testFindFull(@Mocked GroupDAO groupDAO) throws Exception {
+    @Test
+    public void testFindNull(@Mocked GroupDAO groupDAO) throws Exception {
         new Expectations() {{
             dbi.onDemand(GroupDAO.class);
             result = groupDAO;
             groupDAO.find("g2");
             result = null;
         }};
-        repository.find("g2");
+        assertFalse(repository.find("g2").isPresent());
     }
 
 

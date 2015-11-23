@@ -1,6 +1,6 @@
 package org.maxur.wmodel.domain;
 
-import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
+import static org.maxur.wmodel.domain.Lazy.lazy;
 
 /**
  * @author myunusov
@@ -11,23 +11,20 @@ public class User extends Entity {
 
     private final String name;
 
-    private final String groupId;
+    private Lazy<Group> group;
 
-    private Group group;
-
-    private User(String id, String name, String groupId) {
+    private User(String id, String name, Lazy<Group> group) {
         super(id);
         this.name = name;
-        this.groupId = groupId;
+        this.group = group;
     }
 
     private User(String name) {
         this.name = name;
-        this.groupId = null;
     }
 
-    public static User make(String id, String name, String groupId) {
-        return new User(id, name, groupId);
+    public static User make(String id, String name, Lazy<Group> group) {
+        return new User(id, name, group);
     }
 
     public static User makeNew(String name) {
@@ -38,24 +35,15 @@ public class User extends Entity {
         return name;
     }
 
-    public Group getGroup() throws NotFoundException {
-        if (group == null) {
-            if (groupId == null) {
-                return null;
-            }
-            group = service(GroupRepository.class).find(groupId);
-        }
-        return group;
+    public Group getGroup() {
+        return this.group.get();
     }
 
     void setGroup(Group group) {
-        this.group = group;
+        this.group = lazy(group);
     }
 
     public String getGroupId() {
-        if (group != null) {
-            return group.getId();
-        }
-        return groupId;
+        return this.group.getId();
     }
 }

@@ -7,9 +7,4 @@ package org.maxur.wmodel.domain;
  */
 public abstract class GroupRepository extends Repository<Group> {
 
-    @Override
-    protected String getTypeName() {
-        return "Group";
-    }
-
 }

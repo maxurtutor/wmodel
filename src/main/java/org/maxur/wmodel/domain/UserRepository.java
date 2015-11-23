@@ -9,11 +9,6 @@ import java.util.List;
  */
 public abstract class UserRepository extends Repository<User> {
 
-    @Override
-    protected String getTypeName() {
-        return "User";
-    }
-
     public abstract List<User> findAll();
 
     public abstract void insert(User user);

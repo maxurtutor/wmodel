@@ -1,5 +1,9 @@
 package org.maxur.wmodel.domain;
 
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
+
 /**
  * @author Maxim Yunusov
  * @version 1.0
@@ -7,15 +11,10 @@ package org.maxur.wmodel.domain;
  */
 public abstract class Repository<T extends Entity> {
 
-    public T find(String id) throws NotFoundException {
-        T result = findById(id);
-        if (result == null) {
-            throw new NotFoundException(getTypeName(), id);
-        }
-        return result;
+    public Optional<T> find(String id) {
+        return ofNullable(findById(id));
     }
 
-    protected abstract String getTypeName();
-
     protected abstract T findById(String id);
+
 }

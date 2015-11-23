@@ -1,7 +1,6 @@
 package org.maxur.wmodel.view.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.maxur.wmodel.domain.NotFoundException;
 import org.maxur.wmodel.domain.User;
 
 /**
@@ -31,13 +30,8 @@ public class UserResponseDTO {
         final UserResponseDTO dto = new UserResponseDTO();
         dto.id = user.getId();
         dto.name = user.getName();
-        try {
-            dto.groupId = user.getGroup().getId();
-            dto.groupName = user.getGroup().getName();
-        } catch (NotFoundException e) {
-            // XXX
-            assert false;
-        }
+        dto.groupId = user.getGroup().getId();
+        dto.groupName = user.getGroup().getName();
         return dto;
     }
 

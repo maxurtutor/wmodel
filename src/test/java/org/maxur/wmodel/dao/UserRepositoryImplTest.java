@@ -1,17 +1,16 @@
 package org.maxur.wmodel.dao;
 
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
-import mockit.Tested;
+import mockit.*;
 import org.junit.Test;
-import org.maxur.wmodel.domain.NotFoundException;
+import org.maxur.wmodel.domain.GroupRepository;
 import org.maxur.wmodel.domain.User;
 import org.skife.jdbi.v2.DBI;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.maxur.wmodel.domain.Lazy.lazy;
 
 /**
  * @author myunusov
@@ -20,7 +19,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class UserRepositoryImplTest {
 
-    public static final User FAKE_USER = User.make("u1", "Name", "g2");
+    public static final User FAKE_USER = User.make("u1", "Name", lazy("g2", null));
+    public static final UserDAO.UserDAODTO USER_DAODTO = new UserDAO.UserDAODTO("u1", "Name", "g2");
 
     @Tested
     UserRepositoryImpl repository;
@@ -28,19 +28,22 @@ public class UserRepositoryImplTest {
     @Injectable
     DBI dbi;
 
+    @Injectable
+    GroupRepository groupRepository;
+
     @Test
     public void testFind(@Mocked UserDAO userDAO) throws Exception {
         new Expectations() {{
             dbi.onDemand(UserDAO.class);
             result = userDAO;
             userDAO.find("u1");
-            result = FAKE_USER;
+            result = USER_DAODTO;
         }};
-        final User result = repository.find("u1");
+        final User result = repository.find("u1").get();
         assertEquals("Name", result.getName());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testFindNull(@Mocked UserDAO userDAO) throws Exception {
         new Expectations() {{
             dbi.onDemand(UserDAO.class);
@@ -48,7 +51,7 @@ public class UserRepositoryImplTest {
             userDAO.find("u1");
             result = null;
         }};
-        repository.find("u1");
+        assertFalse(repository.find("u1").isPresent());
     }
 
     @Test
@@ -57,7 +60,7 @@ public class UserRepositoryImplTest {
             dbi.onDemand(UserDAO.class);
             result = userDAO;
             userDAO.findAll();
-            result = new User[]{FAKE_USER};
+            result = new UserDAO.UserDAODTO[]{USER_DAODTO};
         }};
         final List<User> result = repository.findAll();
         assertEquals(1, result.size());
@@ -69,9 +72,12 @@ public class UserRepositoryImplTest {
         new Expectations() {{
             dbi.onDemand(UserDAO.class);
             result = userDAO;
-            userDAO.insert(FAKE_USER);
+            userDAO.insert(withNotNull());
         }};
         repository.insert(FAKE_USER);
+        new Verifications() {{
+            userDAO.insert(withAny(USER_DAODTO));
+        }};
     }
 
 }
