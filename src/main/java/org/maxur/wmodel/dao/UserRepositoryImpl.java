@@ -1,15 +1,13 @@
 package org.maxur.wmodel.dao;
 
-import org.maxur.wmodel.domain.GroupRepository;
-import org.maxur.wmodel.domain.User;
-import org.maxur.wmodel.domain.UserRepository;
+import org.maxur.wmodel.domain.*;
 import org.skife.jdbi.v2.DBI;
 
 import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.maxur.wmodel.domain.Lazy.lazy;
+import static org.maxur.wmodel.dao.Lazy.lazy;
 
 /**
  * @author myunusov
@@ -28,20 +26,36 @@ public class UserRepositoryImpl extends UserRepository {
         this.groupRepository = groupRepository;
     }
 
+    private static Group proxy(final Lazy<Group> lazy) {
+
+        return new Group(lazy.getId()) {
+
+            @Override
+            public void addUser(User user) throws ValidationException {
+                lazy.get().addUser(user);
+            }
+
+            @Override
+            public String getName() {
+                return lazy.get().getName();
+            }
+        };
+    }
+
     @Override
     protected User findById(String id) {
         final UserDAO.UserDAODTO dto = dao().find(id);
         if (dto == null) {
             return null;
         }
-        return User.make(dto.id, dto.name, lazy(dto.groupId, groupRepository::find));
+        return User.make(dto.id, dto.name, proxy(lazy(dto.groupId, groupRepository::find)));
     }
 
     @Override
     public List<User> findAll() {
         return dao().findAll()
             .stream()
-                .map(dto -> User.make(dto.id, dto.name, lazy(dto.groupId, groupRepository::find)))
+                .map(dto -> User.make(dto.id, dto.name, proxy(lazy(dto.groupId, groupRepository::find))))
             .collect(toList());
     }
 

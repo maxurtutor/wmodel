@@ -1,7 +1,5 @@
 package org.maxur.wmodel.domain;
 
-import static org.maxur.wmodel.domain.Lazy.lazy;
-
 /**
  * @author myunusov
  * @version 1.0
@@ -11,9 +9,9 @@ public class User extends Entity {
 
     private final String name;
 
-    private Lazy<Group> group;
+    private Group group;
 
-    private User(String id, String name, Lazy<Group> group) {
+    private User(String id, String name, Group group) {
         super(id);
         this.name = name;
         this.group = group;
@@ -23,7 +21,7 @@ public class User extends Entity {
         this.name = name;
     }
 
-    public static User make(String id, String name, Lazy<Group> group) {
+    public static User make(String id, String name, Group group) {
         return new User(id, name, group);
     }
 
@@ -36,11 +34,11 @@ public class User extends Entity {
     }
 
     public Group getGroup() {
-        return this.group.get();
+        return this.group;
     }
 
     void setGroup(Group group) {
-        this.group = lazy(group);
+        this.group = group;
     }
 
     public String getGroupId() {

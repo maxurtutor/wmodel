@@ -1,4 +1,6 @@
-package org.maxur.wmodel.domain;
+package org.maxur.wmodel.dao;
+
+import org.maxur.wmodel.domain.Entity;
 
 import java.util.Optional;
 import java.util.function.Function;

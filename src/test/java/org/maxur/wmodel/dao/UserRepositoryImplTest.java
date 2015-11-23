@@ -2,15 +2,16 @@ package org.maxur.wmodel.dao;
 
 import mockit.*;
 import org.junit.Test;
+import org.maxur.wmodel.domain.Group;
 import org.maxur.wmodel.domain.GroupRepository;
 import org.maxur.wmodel.domain.User;
 import org.skife.jdbi.v2.DBI;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.maxur.wmodel.domain.Lazy.lazy;
 
 /**
  * @author myunusov
@@ -19,7 +20,8 @@ import static org.maxur.wmodel.domain.Lazy.lazy;
  */
 public class UserRepositoryImplTest {
 
-    public static final User FAKE_USER = User.make("u1", "Name", lazy("g2", null));
+    public static final Group FAKE_GROUP = Group.make("g2", "Testers", 4);
+    public static final User FAKE_USER = User.make("u1", "Name", FAKE_GROUP);
     public static final UserDAO.UserDAODTO USER_DAODTO = new UserDAO.UserDAODTO("u1", "Name", "g2");
 
     @Tested
@@ -32,7 +34,7 @@ public class UserRepositoryImplTest {
     GroupRepository groupRepository;
 
     @Test
-    public void testFind(@Mocked UserDAO userDAO) throws Exception {
+    public void testFindWithLazy(@Mocked UserDAO userDAO) throws Exception {
         new Expectations() {{
             dbi.onDemand(UserDAO.class);
             result = userDAO;
@@ -41,6 +43,27 @@ public class UserRepositoryImplTest {
         }};
         final User result = repository.find("u1").get();
         assertEquals("Name", result.getName());
+        assertEquals("g2", result.getGroupId());
+        new Verifications() {{
+            groupRepository.find("g2");
+            times = 0;
+        }};
+    }
+
+    @Test
+    public void testFind(@Mocked UserDAO userDAO) throws Exception {
+        new Expectations() {{
+            dbi.onDemand(UserDAO.class);
+            result = userDAO;
+            userDAO.find("u1");
+            result = USER_DAODTO;
+            groupRepository.find("g2");
+            result = Optional.of(FAKE_GROUP);
+        }};
+        final User result = repository.find("u1").get();
+        assertEquals("Name", result.getName());
+        assertEquals("g2", result.getGroupId());
+        assertEquals("Testers", result.getGroup().getName());
     }
 
     @Test
