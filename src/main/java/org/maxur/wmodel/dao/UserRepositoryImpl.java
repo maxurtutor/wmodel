@@ -1,6 +1,10 @@
 package org.maxur.wmodel.dao;
 
-import org.maxur.wmodel.domain.*;
+import net.sf.cglib.proxy.Enhancer;
+import org.maxur.wmodel.domain.Group;
+import org.maxur.wmodel.domain.GroupRepository;
+import org.maxur.wmodel.domain.User;
+import org.maxur.wmodel.domain.UserRepository;
 import org.skife.jdbi.v2.DBI;
 
 import javax.inject.Inject;
@@ -26,38 +30,32 @@ public class UserRepositoryImpl extends UserRepository {
         this.groupRepository = groupRepository;
     }
 
-    private static Group proxy(final Lazy<Group> lazy) {
-
-        return new Group(lazy.getId()) {
-
-            @Override
-            public void addUser(User user) throws ValidationException {
-                lazy.get().addUser(user);
-            }
-
-            @Override
-            public String getName() {
-                return lazy.get().getName();
-            }
-        };
-    }
-
     @Override
     protected User findById(String id) {
         final UserDAO.UserDAODTO dto = dao().find(id);
         if (dto == null) {
             return null;
         }
-        return User.make(dto.id, dto.name, proxy(lazy(dto.groupId, groupRepository::find)));
+        return User.make(dto.id, dto.name, proxy(dto.groupId));
     }
 
     @Override
     public List<User> findAll() {
         return dao().findAll()
-            .stream()
-                .map(dto -> User.make(dto.id, dto.name, proxy(lazy(dto.groupId, groupRepository::find))))
-            .collect(toList());
+                .stream()
+                .map(dto -> User.make(dto.id, dto.name, proxy(dto.groupId)))
+                .collect(toList());
     }
+
+    private Group proxy(String groupId) {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(Group.class);
+        enhancer.setCallback(new LazyInvocationHandler<>(lazy(groupId, groupRepository::find)));
+        return (Group) enhancer.create(
+                new Class[]{String.class, String.class, Integer.class},
+                new Object[]{groupId, "", 0});
+    }
+
 
     @Override
     public void insert(User user) {
