@@ -14,12 +14,12 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.h2.tools.RunScript;
-import org.maxur.wmodel.dao.GroupRepositoryImpl;
-import org.maxur.wmodel.dao.UserRepositoryImpl;
+import org.maxur.wmodel.dao.*;
 import org.maxur.wmodel.domain.GroupRepository;
-import org.maxur.wmodel.domain.ServiceLocatorProvider;
+import org.maxur.wmodel.domain.UserFactory;
 import org.maxur.wmodel.domain.UserRepository;
 import org.maxur.wmodel.view.RuntimeExceptionHandler;
+import org.maxur.wmodel.view.UnitOfWorkFilter;
 import org.maxur.wmodel.view.UserResource;
 import org.maxur.wmodel.view.ValidationExceptionHandler;
 import org.skife.jdbi.v2.DBI;
@@ -92,9 +92,10 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
             protected void configure() {
                 bind(env.lifecycle()).to(LifecycleEnvironment.class);
                 bind(dbi).to(DBI.class);
+                bind(UserFactoryImpl.class).to(UserFactory.class).in(Singleton.class);
                 bind(UserRepositoryImpl.class).to(UserRepository.class).in(Singleton.class);
                 bind(GroupRepositoryImpl.class).to(GroupRepository.class).in(Singleton.class);
-                bind(ServiceLocatorProvider.class).to(ServiceLocatorProvider.class).in(Singleton.class);
+                bindFactory(UnitOfWorkFactory.class).to(UnitOfWork.class).in(Singleton.class);
             }
         };
     }
@@ -103,6 +104,7 @@ public class Launcher extends Application<Launcher.AppConfiguration> {
         jersey.packages(UserResource.class.getPackage().getName());
         jersey.register(RuntimeExceptionHandler.class);
         jersey.register(ValidationExceptionHandler.class);
+        jersey.register(UnitOfWorkFilter.class);
         jersey.register(binder);
     }
 

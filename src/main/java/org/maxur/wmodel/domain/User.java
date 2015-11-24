@@ -11,22 +11,14 @@ public class User extends Entity {
 
     private Group group;
 
-    private User(String id, String name, Group group) {
+    public User(String id, String name, Group group) {
         super(id);
         this.name = name;
         this.group = group;
     }
 
-    private User(String name) {
+    public User(String name) {
         this.name = name;
-    }
-
-    public static User make(String id, String name, Group group) {
-        return new User(id, name, group);
-    }
-
-    public static User makeNew(String name) {
-        return new User(name);
     }
 
     public String getName() {

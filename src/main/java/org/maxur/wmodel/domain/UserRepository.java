@@ -11,6 +11,4 @@ public abstract class UserRepository extends Repository<User> {
 
     public abstract List<User> findAll();
 
-    public abstract void insert(User user);
-
 }

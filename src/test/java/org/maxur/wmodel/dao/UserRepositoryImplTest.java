@@ -21,7 +21,7 @@ import static org.junit.Assert.assertFalse;
 public class UserRepositoryImplTest {
 
     public static final Group FAKE_GROUP = Group.make("g2", "Testers", 4);
-    public static final User FAKE_USER = User.make("u1", "Name", FAKE_GROUP);
+    public static final User FAKE_USER = new User("u1", "Name", FAKE_GROUP);
     public static final UserDAO.UserDAODTO USER_DAODTO = new UserDAO.UserDAODTO("u1", "Name", "g2");
 
     @Tested
@@ -32,6 +32,10 @@ public class UserRepositoryImplTest {
 
     @Injectable
     GroupRepository groupRepository;
+
+    @Injectable
+    UnitOfWork unitOfWork;
+
 
     @Test
     public void testFindWithLazy(@Mocked UserDAO userDAO) throws Exception {
@@ -90,17 +94,5 @@ public class UserRepositoryImplTest {
         assertEquals(FAKE_USER, result.get(0));
     }
 
-    @Test
-    public void testInsert(@Mocked UserDAO userDAO) throws Exception {
-        new Expectations() {{
-            dbi.onDemand(UserDAO.class);
-            result = userDAO;
-            userDAO.insert(withNotNull());
-        }};
-        repository.insert(FAKE_USER);
-        new Verifications() {{
-            userDAO.insert(withAny(USER_DAODTO));
-        }};
-    }
 
 }

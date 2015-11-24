@@ -24,9 +24,12 @@ public class UserRepositoryImpl extends UserRepository {
 
     private final GroupRepository groupRepository;
 
+    private final UnitOfWork unitOfWork;
+
     @Inject
-    public UserRepositoryImpl(DBI dbi, GroupRepository groupRepository) {
+    public UserRepositoryImpl(DBI dbi, GroupRepository groupRepository, UnitOfWork unitOfWork) {
         this.dbi = dbi;
+        this.unitOfWork = unitOfWork;
         this.groupRepository = groupRepository;
     }
 
@@ -36,14 +39,16 @@ public class UserRepositoryImpl extends UserRepository {
         if (dto == null) {
             return null;
         }
-        return User.make(dto.id, dto.name, proxy(dto.groupId));
+        final User user = new User(dto.id, dto.name, proxy(dto.groupId));
+        unitOfWork.change(user);
+        return user;
     }
 
     @Override
     public List<User> findAll() {
         return dao().findAll()
                 .stream()
-                .map(dto -> User.make(dto.id, dto.name, proxy(dto.groupId)))
+                .map(dto -> new User(dto.id, dto.name, proxy(dto.groupId)))
                 .collect(toList());
     }
 
@@ -54,12 +59,6 @@ public class UserRepositoryImpl extends UserRepository {
         return (Group) enhancer.create(
                 new Class[]{String.class, String.class, Integer.class},
                 new Object[]{groupId, "", 0});
-    }
-
-
-    @Override
-    public void insert(User user) {
-        dao().insert(new UserDAO.UserDAODTO(user.getId(), user.getName(), user.getGroupId()));
     }
 
     private UserDAO dao() {

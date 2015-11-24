@@ -2,8 +2,6 @@ package org.maxur.wmodel.domain;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.maxur.wmodel.domain.ServiceLocatorProvider.service;
-
 /**
  * @author myunusov
  * @version 1.0
@@ -36,8 +34,6 @@ public class Group extends Entity {
             throw new ValidationException("More users than allowed in group");
         }
         user.setGroup(this);
-        final UserRepository repository = service(UserRepository.class);
-        repository.insert(user);
         userNumber.incrementAndGet();
     }
 
